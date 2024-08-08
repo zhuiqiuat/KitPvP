@@ -4,21 +4,17 @@
 
 Scoreboard:
   General:
-    Title: '&0     &r&b&lKIT-PVP     &0'
+    Title: '&0     &r&b&l职业战争     &0'
     Enabled: true
   Lines:
   - ' '
-  - '&e&lStats'
-  - '&aName: &f%player%'
-  - '&aKills: &f%kills%'
-  - '&aDeaths: &f%deaths%'
-  - '&aK/D Ratio: &f%kd%'
+  - '&f击杀 &b%kills%'
+  - '&f死亡 &b%deaths%'
+  - '&fK/D &b%kd%'
   - ' '
-  - '&6&lLevel'
-  - '&aLevel: &f%level%/%max_level%'
-  - '&aExperience: &f%xp%/%max_xp%'
+  - '&f等级 &b%level%/%max_level%'
+  - '&f经验 &b%xp%/%max_xp%'
   - ' '
-  - '&c&lKill Streak'
-  - '&f%streak% Kills'
+  - '&f连杀 &b%streak%'
   - ' '
-  - '&ewww.myserver.com'
+  - '&b&oMchaptim.cn'

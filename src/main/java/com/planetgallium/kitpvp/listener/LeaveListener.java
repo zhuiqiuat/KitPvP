@@ -14,16 +14,17 @@ public class LeaveListener implements Listener {
 
 	private final Game plugin;
 	private final Arena arena;
-	
+
 	public LeaveListener(Game plugin) {
 		this.plugin = plugin;
 		this.arena = plugin.getArena();
 	}
-	
+
 	@EventHandler
 	public void onLeave(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
 		if (Toolkit.inArena(p)) {
+			e.setQuitMessage(null);
 			arena.deletePlayer(p);
 		}
 	}
@@ -42,5 +43,5 @@ public class LeaveListener implements Listener {
 			// no need to clear stats from cache; that will be done on player quit above
 		}
 	}
-	
+
 }

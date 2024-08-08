@@ -70,10 +70,10 @@ public class Cooldown {
 		} else {
 			String longCooldown = "";
 
-			if (getDays() != 0) longCooldown += (getDays() + " days ");
-			if (getHours() != 0) longCooldown += (getHours() + " hours ");
-			if (getMinutes() != 0) longCooldown += (getMinutes() + " minutes ");
-			if (getSeconds() != 0) longCooldown += (getSeconds() + " seconds");
+			if (getDays() != 0) longCooldown += (getDays() + " 天 ");
+			if (getHours() != 0) longCooldown += (getHours() + " 小时 ");
+			if (getMinutes() != 0) longCooldown += (getMinutes() + " 分钟 ");
+			if (getSeconds() != 0) longCooldown += (getSeconds() + " 秒");
 
 			if (longCooldown.length() > 0 && longCooldown.charAt(longCooldown.length() - 1) == ' ') {
 				longCooldown = longCooldown.substring(0, longCooldown.length() - 1);

@@ -51,7 +51,7 @@ public class Arena {
 		this.cooldowns = new Cooldowns(plugin, this);
 		this.menus = new Menus(resources);
 	}
-	
+
 	public void addPlayer(Player p, boolean toSpawn, boolean giveItems) {
 		cooldowns.clearPlayerAbilityCooldowns(p.getName());
 
@@ -60,13 +60,13 @@ public class Arena {
 		if (config.getBoolean("Arena.ResetKillStreakOnLeave")) {
 			killstreaks.setStreak(p, 0);
 		}
-		
+
 		if (config.getBoolean("Arena.ClearPotionEffectsOnJoin")) {
 			for (PotionEffect effect : p.getActivePotionEffects()) {
 				p.removePotionEffect(effect.getType());
 			}
 		}
-		
+
 		if (p.getFireTicks() > 0) {
 			p.setFireTicks(0);
 		}
@@ -81,7 +81,7 @@ public class Arena {
 //			p.setHealth(20.0);
 			p.setHealth(Toolkit.getMaxHealth(p));
 		}
-		
+
 		p.setExp(0f);
 		p.setFoodLevel(20);
 
@@ -97,7 +97,7 @@ public class Arena {
 			updateScoreboards(p, false);
 		}
 	}
-	
+
 	public void removePlayer(Player p) {
 		CacheManager.getPlayerAbilityCooldowns(p.getName()).clear();
 		CacheManager.getPotionSwitcherUsers().remove(p.getName());
@@ -105,13 +105,13 @@ public class Arena {
 		for (PotionEffect effect : p.getActivePotionEffects()) {
 			p.removePotionEffect(effect.getType());
 		}
-		
+
 		kits.resetPlayerKit(p.getName());
 
 		if (config.getBoolean("Arena.ResetKillStreakOnLeave")) {
 			getKillStreaks().resetStreak(p);
 		}
-		
+
 		p.setExp(0f);
 		p.setFoodLevel(20);
 
@@ -122,7 +122,7 @@ public class Arena {
 		stats.pushCachedStatsToDatabase(p.getName(), false); // cached stats are pushed to database on death
 		hitCache.remove(p.getName());
 	}
-	
+
 	public void deletePlayer(Player p) {
 		if (config.getBoolean("Arena.ClearInventoryOnLeave")) {
 			p.getInventory().clear();
@@ -133,7 +133,7 @@ public class Arena {
 		hitCache.remove(p.getName());
 		stats.pushCachedStatsToDatabase(p.getName(), true);
 	}
-	
+
 	public void giveArenaItems(Player p) {
 		ConfigurationSection items = config.getConfigurationSection("Items");
 
@@ -157,17 +157,25 @@ public class Arena {
 			p.teleport(Toolkit.getLocationFromResource(config,
 					"Arenas." + arenaName + "." + generateRandomArenaSpawn(arenaName)));
 		} else {
-			p.sendMessage(resources.getMessages().fetchString("Messages.Error.Arena")
-					.replace("%arena%", arenaName));
+			p.sendMessage(resources.getMessages().fetchString("Messages.Error.Arena").replace("%arena%", arenaName));
 		}
 	}
-	
+
+	public void toRandomGameSpawn(Player p, String arenaName) {
+		if (config.contains("GameSpawns." + arenaName)) {
+			p.teleport(Toolkit.getLocationFromResource(config,
+					"GameSpawns." + arenaName + "." + generateRandomGameSpawn(arenaName)));
+		} else {
+			p.sendMessage(resources.getMessages().fetchString("Messages.Error.Spawn").replace("%arena%", arenaName));
+		}
+	}
+
 	public void updateScoreboards(Player p, boolean hide) {
 		Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
 		String scoreboardTitle = utilties.addPlaceholdersIfPossible(p,
 				resources.getScoreboard().fetchString("Scoreboard.General.Title"));
 		Infoboard scoreboard = new Infoboard(board, scoreboardTitle);
-		
+
 		if (!hide) {
 			for (String line : resources.getScoreboard().getStringList("Scoreboard.Lines")) {
 				scoreboard.add(utilties.addPlaceholdersIfPossible(p, line));
@@ -186,22 +194,47 @@ public class Arena {
 		return spawnKeys.get(random.nextInt(spawnKeys.size()));
 	}
 
-	public Map<String, String> getHitCache() { return hitCache; }
+	public String generateRandomGameSpawn(String arenaName) {
+		ConfigurationSection section = config.getConfigurationSection("GameSpawns." + arenaName);
+		List<String> spawnKeys = new ArrayList<>(section.getKeys(false));
 
-	public Stats getStats() { return stats; }
+		return spawnKeys.get(random.nextInt(spawnKeys.size()));
+	}
 
-	public Utilities getUtilities() { return utilties; }
+	public Map<String, String> getHitCache() {
+		return hitCache;
+	}
 
-	public Leaderboards getLeaderboards() { return leaderboards; }
-	
-	public Kits getKits() { return kits; }
+	public Stats getStats() {
+		return stats;
+	}
 
-	public Abilities getAbilities() { return abilities; }
-	
-	public KillStreaks getKillStreaks() { return killstreaks; }
-	
-	public Cooldowns getCooldowns() { return cooldowns; }
+	public Utilities getUtilities() {
+		return utilties;
+	}
 
-	public Menus getMenus() { return menus; }
-	
+	public Leaderboards getLeaderboards() {
+		return leaderboards;
+	}
+
+	public Kits getKits() {
+		return kits;
+	}
+
+	public Abilities getAbilities() {
+		return abilities;
+	}
+
+	public KillStreaks getKillStreaks() {
+		return killstreaks;
+	}
+
+	public Cooldowns getCooldowns() {
+		return cooldowns;
+	}
+
+	public Menus getMenus() {
+		return menus;
+	}
+
 }

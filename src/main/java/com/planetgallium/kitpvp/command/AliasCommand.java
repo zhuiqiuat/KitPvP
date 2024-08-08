@@ -22,11 +22,7 @@ public class AliasCommand implements Listener {
 
 		String[] words = message.split(" ");
 
-		if (message.equals("/spawn") && config.getBoolean("Commands.Alias.Spawn")) {
-			e.setCancelled(true);
-			p.performCommand("kp spawn");
-
-		} else if (message.equals("/kits") && config.getBoolean("Commands.Alias.Kits")) {
+		if (message.equals("/kits") && config.getBoolean("Commands.Alias.Kits")) {
 			e.setCancelled(true);
 			p.performCommand("kp kits");
 
@@ -50,5 +46,5 @@ public class AliasCommand implements Listener {
 		}
 
 	}
-	
+
 }

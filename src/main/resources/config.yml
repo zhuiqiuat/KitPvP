@@ -5,22 +5,22 @@
 Items:
   Kits:
     Enabled: true
-    Name: '&aKit Selector &7(Right Click)'
+    Name: '&f选择职业 &8► &7右键单击'
     Material: CHEST
     Slot: 0
     Menu: true
     Commands: []
   Leave:
     Enabled: true
-    Name: '&aReturn to Hub &7(Right Click)'
+    Name: '&f返回大厅 &8► &7右键单击'
     Material: WATCH
     Slot: 8
     BungeeCord:
-      Server: Hub
+      Server: 主大厅
       Enabled: false
     Commands: []
 Chat:
-  Format: '%level% &e%player% &f%message%'
+  Format: '%level% &r%player% &r%message%'
   Enabled: true
 Combat:
   HitSound:
@@ -28,7 +28,7 @@ Combat:
     Pitch: 1
     Enabled: true
   ArrowHit:
-    Message: '%prefix% &b%player% &7is on &c%health%&7.'
+    Message: '&f%player% &8| &c%health% ♥'
     Enabled: true
   ArrowReturn:
     ItemName: '&eReturnable Arrow'
@@ -40,28 +40,28 @@ Kill:
     NoSpace: '%prefix% &c%amount% soups could not be added to your full inventory.'
     Amount: 1
     Delay: 0
-    Enabled: true
+    Enabled: false
   Commands: []
 Death:
   Title:
-    Title: '&c&lYOU DIED!'
-    Subtitle: '&7You will respawn in %seconds% seconds.'
-    Time: 5
-    Message: '%prefix% &7Respawning...'
+    Title: '&c&l你死了'
+    Subtitle: '&f将在 %seconds% 秒后重生'
+    Time: 3
+    Message: '%prefix% &f重生中...'
   Sound:
     Sound: AMBIENCE_THUNDER
     Pitch: 1
     Enabled: false
   Commands: []
   Messages:
-    Player: '%prefix% &b%victim% &7was killed by &b%killer% &7(&c%killer_health%&7).'
-    Shot: '%prefix% &b%victim% &7was shot by &b%killer% &7(&c%killer_health%&7).'
-    Fall: '%prefix% &b%victim% &7fell to their doom.'
-    Void: '%prefix% &b%victim% &7died from the void.'
-    Fire: '%prefix% &b%victim% &7died from fire.'
-    Explosion: '%prefix% &b%victim% &7blew up.'
-    Suicide: '%prefix% &b%victim% &7killed themselves.'
-    Unknown: '%prefix% &b%victim% &7died.'
+    Player: '%prefix% &b%victim% &f被 &b%killer% &f击杀'
+    Shot: '%prefix% &b%victim% &f被 &b%killer% &f用弓箭击杀'
+    Fall: '%prefix% &b%victim% &f摔死了'
+    Void: '%prefix% &b%victim% &f掉出了这个世界'
+    Fire: '%prefix% &b%victim% &f被烧死了'
+    Explosion: '%prefix% &b%victim% &f爆炸了'
+    Suicide: '%prefix% &b%victim% &f自杀了'
+    Unknown: '%prefix% &b%victim% &f不知道怎么就死了'
     Enabled: true
 Respawn:
   Commands: []

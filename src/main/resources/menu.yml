@@ -8,64 +8,64 @@ Menu:
     Size: 54
   Items:
     10:
-      Name: '&a&lFighter Kit'
+      Name: '&a&l战士'
       Material: IRON_CHESTPLATE
       Lore:
-      - '&6Ability: &7Rechargeable Health Pack'
+      - '&f天赋 &f生命恢复'
       - ' '
-      - '&7- Iron Sword'
-      - '&7- Iron Helmet'
-      - '&7- Iron Chestplate'
-      - '&7- Iron Leggings'
-      - '&7- Iron Boots'
+      - '&7- 铁剑'
+      - '&7- 铁头盔'
+      - '&7- 铁胸甲'
+      - '&7- 铁护腿'
+      - '&7- 铁靴子'
       - ' '
-      - '&eLeft-click to select.'
-      - '&eRight-click to preview.'
+      - '&e左键点击选择'
+      - '&e右键点击预览'
       Commands:
         Left-Click:
-        - 'player: kp kit Fighter'
+        - 'player: kp kit 战士'
         Right-Click:
-        - 'player: kp preview Fighter'
+        - 'player: kp preview 战士'
     11:
-      Name: '&a&lArcher Kit'
+      Name: '&a&l射手'
       Material: BOW
       Lore:
-      - '&6Ability: &710 Fire Arrows'
+      - '&f天赋 &b10支火之箭矢'
       - ' '
-      - '&7- Stone Sword'
-      - '&7- Bow'
-      - '&7- 64 Arrows'
-      - '&7- Chain Helmet'
-      - '&7- Chain Chestplate'
-      - '&7- Chain Leggings'
-      - '&7- Chain Boots'
+      - '&7- 石剑'
+      - '&7- 弓'
+      - '&7- 64支箭'
+      - '&7- 链甲头盔'
+      - '&7- 链甲胸甲'
+      - '&7- 链甲护腿'
+      - '&7- 链甲靴子'
       - ' '
-      - '&eLeft-click to select.'
-      - '&eRight-click to preview.'
+      - '&e左键点击选择'
+      - '&e右键点击预览'
       Commands:
         Left-Click:
-        - 'player: kp kit Archer'
+        - 'player: kp kit 射手'
         Right-Click:
-        - 'player: kp preview Archer'
+        - 'player: kp preview 射手'
     12:
-      Name: '&a&lTank Kit'
+      Name: '&a&l坦克'
       Material: DIAMOND
       Lore:
-      - '&6Ability: &7Rechargeable Speed Boost'
+      - '&f天赋 &b移速提升'
       - ' '
-      - '&7- Iron Sword'
-      - '&7- Diamond Helmet'
-      - '&7- Diamond Chestplate'
-      - '&7- Diamond Leggings'
-      - '&7- Diamond Boots'
+      - '&7- 铁剑'
+      - '&7- 钻石头盔'
+      - '&7- 钻石胸甲'
+      - '&7- 钻石护腿'
+      - '&7- 钻石靴子'
       - ' '
-      - '&eLeft-click to select.'
-      - '&eRight-click to preview.'
+      - '&e左键点击选择'
+      - '&e右键点击预览'
       Commands:
         Left-Click:
-        - 'player: kp kit Tank'
+        - 'player: kp kit 坦克'
         Right-Click:
-        - 'player: kp preview Tank'
+        - 'player: kp preview 坦克'
     13:
       Name: '&a&lSoldier Kit'
       Material: ARROW
@@ -278,8 +278,8 @@ Menu:
         Right-Click:
         - 'player: kp preview Example'
     40:
-      Name: '&c&lClose'
+      Name: '&c&l关闭'
       Material: BARRIER
       Lore:
-      - '&7Click to close the Kit Menu.'
+      - '&f点击关闭职业选择菜单'
       Commands: []

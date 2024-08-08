@@ -19,23 +19,30 @@ import com.planetgallium.kitpvp.game.Arena;
 import com.planetgallium.kitpvp.listener.*;
 import com.planetgallium.kitpvp.util.*;
 
+import lombok.Getter;
+
 public class Game extends JavaPlugin implements Listener {
-	
+	@Getter
 	private static Game instance;
+	@Getter
 	private static String prefix = "None";
 
 	private Arena arena;
 	private Infobase database;
 	private Resources resources;
-	
+
 	private String updateVersion = "Error";
 	private boolean needsUpdate = false;
 	private boolean hasPlaceholderAPI = false;
 	private boolean hasWorldGuard = false;
-	
+
+	@Getter
+	private SpawnCommand spawnCommand;
+
 	@Override
 	public void onEnable() {
-		Toolkit.printToConsole("&7[&b&lKIT-PVP&7] &7Enabling &bKitPvP &7version &b" + this.getDescription().getVersion() + "&7...");
+		Toolkit.printToConsole(
+				"&7[&b&lKIT-PVP&7] &7Enabling &bKitPvP &7version &b" + this.getDescription().getVersion() + "&7...");
 
 		instance = this;
 		resources = new Resources(this);
@@ -62,27 +69,31 @@ public class Game extends JavaPlugin implements Listener {
 		pm.registerEvents(new TrackerListener(this), this);
 		pm.registerEvents(new MenuListener(this), this);
 		pm.registerEvents(getArena().getKillStreaks(), this);
-		
+
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-	    getCommand("kitpvp").setExecutor(new MainCommand(this));
-		
+		getCommand("kitpvp").setExecutor(new MainCommand(this));
+		spawnCommand = new SpawnCommand(this);
+		getCommand("spawn").setExecutor(spawnCommand);
+
 		new Metrics(this);
-		
+
 		new BukkitRunnable() {
 			@Override
 			public void run() {
 				checkUpdate();
 			}
 		}.runTaskAsynchronously(this);
-		
+
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-			Bukkit.getConsoleSender().sendMessage(Toolkit.translate("[&b&lKIT-PVP&7] &7Hooking into &bPlaceholderAPI&7..."));
+			Bukkit.getConsoleSender()
+					.sendMessage(Toolkit.translate("[&b&lKIT-PVP&7] &7Hooking into &bPlaceholderAPI&7..."));
 			new Placeholders(this).register();
 			hasPlaceholderAPI = true;
 		}
 
 		if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-			Bukkit.getConsoleSender().sendMessage(Toolkit.translate("[&b&lKIT-PVP&7] &7Hooking into &bWorldGuard&7..."));
+			Bukkit.getConsoleSender()
+					.sendMessage(Toolkit.translate("[&b&lKIT-PVP&7] &7Hooking into &bWorldGuard&7..."));
 			hasWorldGuard = true;
 		}
 
@@ -92,7 +103,8 @@ public class Game extends JavaPlugin implements Listener {
 	}
 
 	private void populateUUIDCacheForOnlinePlayers() {
-		// populates UUID cache if there are players online when doing /reload to avoid a lot of errors related
+		// populates UUID cache if there are players online when doing /reload to avoid
+		// a lot of errors related
 		// to database and UUIDs
 		if (Bukkit.getOnlinePlayers().size() > 0) {
 			for (Player player : Bukkit.getOnlinePlayers()) {
@@ -104,18 +116,21 @@ public class Game extends JavaPlugin implements Listener {
 	private void checkUpdate() {
 		Updater.of(this).resourceId(27107).handleResponse((versionResponse, version) -> {
 			switch (versionResponse) {
-				case FOUND_NEW:
-					Bukkit.getConsoleSender().sendMessage(Toolkit.translate("&7[&b&lKIT-PVP&7] &aNew version found! Please update to v" + version + " on the Spigot page."));
-					needsUpdate = true;
-					updateVersion = version;
-					break;
-				case UNAVAILABLE:
-					Bukkit.getConsoleSender().sendMessage(Toolkit.translate("&7[&b&lKIT-PVP&7] &cUnable to perform an update check."));
-					break;
+			case FOUND_NEW:
+				Bukkit.getConsoleSender()
+						.sendMessage(Toolkit.translate("&7[&b&lKIT-PVP&7] &aNew version found! Please update to v"
+								+ version + " on the Spigot page."));
+				needsUpdate = true;
+				updateVersion = version;
+				break;
+			case UNAVAILABLE:
+				Bukkit.getConsoleSender()
+						.sendMessage(Toolkit.translate("&7[&b&lKIT-PVP&7] &cUnable to perform an update check."));
+				break;
 			}
 		}).check();
 	}
-	
+
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
@@ -150,22 +165,32 @@ public class Game extends JavaPlugin implements Listener {
 //		}
 	}
 
-	public boolean hasPlaceholderAPI() { return hasPlaceholderAPI; }
+	public boolean hasPlaceholderAPI() {
+		return hasPlaceholderAPI;
+	}
 
-	public boolean hasWorldGuard() { return hasWorldGuard; }
+	public boolean hasWorldGuard() {
+		return hasWorldGuard;
+	}
 
-	public boolean needsUpdate() { return needsUpdate; }
-	
-	public String getUpdateVersion() { return updateVersion; }
-	
-	public static Game getInstance() { return instance; }
-	
-	public Arena getArena() { return arena; }
+	public boolean needsUpdate() {
+		return needsUpdate;
+	}
 
-	public Infobase getDatabase() { return database; }
-	
-	public static String getPrefix() { return prefix; }
-	
-	public Resources getResources() { return resources; }
-	
+	public String getUpdateVersion() {
+		return updateVersion;
+	}
+
+	public Arena getArena() {
+		return arena;
+	}
+
+	public Infobase getDatabase() {
+		return database;
+	}
+
+	public Resources getResources() {
+		return resources;
+	}
+
 }

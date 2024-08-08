@@ -39,54 +39,55 @@ public class Toolkit {
 		}
 		return false;
 	}
-	
+
 	public static boolean inArena(Entity entity) {
 		return inArena(entity.getWorld());
 	}
-	
- 	public static String[] getNearestPlayer(Player player, int maxY) {
+
+	public static String[] getNearestPlayer(Player player, int maxY) {
 		String nearest = "player:100000.0";
 
 		for (Player all : Bukkit.getWorld(player.getWorld().getName()).getPlayers()) {
 			String[] list = nearest.split(":");
+			if (!Game.getInstance().getArena().getKits().playerHasKit(all.getName()))
+				continue;
 			double cal = player.getLocation().distance(all.getLocation());
-			
+
 			if (cal <= Double.parseDouble(list[1]) && all != player) {
 				if (all.getLocation().getBlockY() < maxY) {
-					if (all.getGameMode() != GameMode.SPECTATOR) {
+					if (all.getGameMode() != GameMode.SPECTATOR)
 						nearest = all.getName() + ":" + cal;
-					}
 				}
 			}
 		}
-		
+
 		if (nearest.equals("player:100000.0")) {
 			return null;
 		}
-		
+
 		return nearest.split(":");
 	}
- 	
- 	public static double round(double value, int precision) {
- 	    int scale = (int) Math.pow(10, precision);
- 	    return (double) Math.round(value * scale) / scale;
- 	}
- 	
- 	public static Color getColorFromConfig(FileConfiguration config, String path) {
- 		return Color.fromRGB(config.getInt(path + ".Red"),
-				config.getInt(path + ".Green"),
-				config.getInt(path + ".Blue"));
- 	}
 
- 	public static void runCommands(Player p, List<String> commands, String replaceFrom, String replaceTo) {
-		if (commands == null) return;
+	public static double round(double value, int precision) {
+		int scale = (int) Math.pow(10, precision);
+		return (double) Math.round(value * scale) / scale;
+	}
+
+	public static Color getColorFromConfig(FileConfiguration config, String path) {
+		return Color.fromRGB(config.getInt(path + ".Red"), config.getInt(path + ".Green"),
+				config.getInt(path + ".Blue"));
+	}
+
+	public static void runCommands(Player p, List<String> commands, String replaceFrom, String replaceTo) {
+		if (commands == null)
+			return;
 
 		for (String commandString : commands) {
 			String[] commandPhrase = commandString.split(":", 2);
 
 			if (commandPhrase.length == 1) {
-				Toolkit.printToConsole("&7[&b&lKIT-PVP&7] &cIncorrect command format. " +
-						"Please see: &fhttps://bit.ly/kp-command-format");
+				Toolkit.printToConsole("&7[&b&lKIT-PVP&7] &cIncorrect command format. "
+						+ "Please see: &fhttps://bit.ly/kp-command-format");
 				return;
 			}
 
@@ -101,8 +102,8 @@ public class Toolkit {
 			} else if (sender.equals("player")) {
 				p.performCommand(replaceCommandPlaceholders(command, p, replaceFrom, replaceTo));
 			} else {
-				Toolkit.printToConsole("&7[&b&lKIT-PVP&7] &cIncorrect command format. " +
-						"Please see: &fhttps://bit.ly/kp-command-format");
+				Toolkit.printToConsole("&7[&b&lKIT-PVP&7] &cIncorrect command format. "
+						+ "Please see: &fhttps://bit.ly/kp-command-format");
 				return;
 			}
 		}
@@ -110,13 +111,11 @@ public class Toolkit {
 
 	private static String replaceCommandPlaceholders(String s, Player p, String replaceFrom, String replaceTo) {
 		String withPotentialPapiPlaceholders = addPlaceholdersIfPossible(p, s);
-		return withPotentialPapiPlaceholders
-				.replace("%player%", p.getName())
-				.replace("%uuid%", p.getUniqueId().toString())
-				.replace(replaceFrom, replaceTo);
+		return withPotentialPapiPlaceholders.replace("%player%", p.getName())
+				.replace("%uuid%", p.getUniqueId().toString()).replace(replaceFrom, replaceTo);
 	}
- 	
- 	public static int versionToNumber() {
+
+	public static int versionToNumber() {
 		String version = Bukkit.getVersion();
 
 		if (version.contains("1.8")) {
@@ -146,22 +145,22 @@ public class Toolkit {
 		} else if (version.contains("1.20")) {
 			return 120;
 		}
- 		return 500;
- 	}
- 	
- 	public static List<String> colorizeList(List<String> list) {
- 		List<String> newList = new ArrayList<>();
+		return 500;
+	}
 
- 		if (list != null) {
+	public static List<String> colorizeList(List<String> list) {
+		List<String> newList = new ArrayList<>();
+
+		if (list != null) {
 			for (String string : list) {
 				newList.add(ChatColor.translateAlternateColorCodes('&', string));
 			}
 			return newList;
 		}
- 		return null;
- 	}
+		return null;
+	}
 
- 	public static List<String> replaceInList(List<String> list, String find, String replace) {
+	public static List<String> replaceInList(List<String> list, String find, String replace) {
 		List<String> newList = new ArrayList<>();
 
 		for (String string : list) {
@@ -170,7 +169,7 @@ public class Toolkit {
 		return newList;
 	}
 
- 	public static String toNormalColorCodes(String string) {
+	public static String toNormalColorCodes(String string) {
 		if (string != null) {
 			return string.replace("§", "&");
 		}
@@ -189,7 +188,7 @@ public class Toolkit {
 		return null;
 	}
 
- 	public static Player getPlayer(World world, String name) {
+	public static Player getPlayer(World world, String name) {
 		for (Player player : world.getPlayers()) {
 			if (player.getName().equals(name)) {
 				return player;
@@ -210,16 +209,15 @@ public class Toolkit {
 
 	public static Location getLocationFromResource(Resource resource, String path) {
 		return new Location(Bukkit.getWorld(resource.fetchString(path + ".World")),
-				(float) resource.getInt(path + ".X") + 0.5,
-				(float) resource.getInt(path + ".Y"),
-				(float) resource.getInt(path + ".Z") + 0.5,
-				(float) resource.getDouble(path + ".Yaw"),
+				(float) resource.getInt(path + ".X") + 0.5, (float) resource.getInt(path + ".Y"),
+				(float) resource.getInt(path + ".Z") + 0.5, (float) resource.getDouble(path + ".Yaw"),
 				(float) resource.getDouble(path + ".Pitch"));
 	}
 
 	public static String addPlaceholdersIfPossible(Player player, String text) {
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 			text = PlaceholderAPI.setPlaceholders(player, text);
+			text = ChatColor.translateAlternateColorCodes('&', text);
 		}
 		return Toolkit.translate(text);
 	}
@@ -263,7 +261,7 @@ public class Toolkit {
 	}
 
 	public static int getNextAvailable(FileConfiguration yamlConfig, String path, int limit, boolean zeroBased,
-									   int fallbackAmount) {
+			int fallbackAmount) {
 		for (int i = zeroBased ? 0 : 1; i < limit; i++) {
 			if (!yamlConfig.contains(path + "." + i)) {
 				return i;
@@ -385,8 +383,8 @@ public class Toolkit {
 				return p.getItemInHand();
 			}
 
-			return p.getInventory().getItem(interactEvent.getHand() != null ?
-					interactEvent.getHand() : EquipmentSlot.HAND);
+			return p.getInventory()
+					.getItem(interactEvent.getHand() != null ? interactEvent.getHand() : EquipmentSlot.HAND);
 		} else if (e instanceof PlayerInteractEntityEvent) {
 			PlayerInteractEntityEvent interactEntityEvent = (PlayerInteractEntityEvent) e;
 			p = interactEntityEvent.getPlayer();
@@ -411,8 +409,8 @@ public class Toolkit {
 				return;
 			}
 
-			p.getInventory().setItem(interactEvent.getHand() != null ?
-					interactEvent.getHand() : EquipmentSlot.HAND, item);
+			p.getInventory().setItem(interactEvent.getHand() != null ? interactEvent.getHand() : EquipmentSlot.HAND,
+					item);
 		} else if (e instanceof PlayerInteractEntityEvent) {
 			PlayerInteractEntityEvent interactEntityEvent = (PlayerInteractEntityEvent) e;
 			p = interactEntityEvent.getPlayer();
@@ -431,8 +429,8 @@ public class Toolkit {
 		if (versionToNumber() == 18) {
 			return p.getItemInHand().getType() == materialToFind;
 		}
-		return p.getInventory().getItemInMainHand().getType() == materialToFind ||
-				p.getInventory().getItemInOffHand().getType() == materialToFind;
+		return p.getInventory().getItemInMainHand().getType() == materialToFind
+				|| p.getInventory().getItemInOffHand().getType() == materialToFind;
 	}
 
 	public static void playSoundToPlayer(Player p, String soundName, int pitch) {

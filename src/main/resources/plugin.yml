@@ -1,7 +1,7 @@
 name: KitPvP
-author: Cervinakuy
+author: [Cervinakuy,追求大哥哥]
 main: com.planetgallium.kitpvp.Game
-version: 2.2.3
+version: 2.2.4
 description: The ultimate all-in-one KitPvP plugin.
 website: https://www.spigotmc.org/resources/27107/
 softdepend: [PlaceholderAPI, WorldGuard]
@@ -13,9 +13,9 @@ commands:
      aliases: [kp, kit-pvp]
    ckit:
      description: Select a kit.
-   cspawn:
-     description: Teleports you to the spawn.
    ckits:
      description: View all available kits.
    cstats:
      description: View your stats.
+   spawn:
+     description: Teleports you to the spawn. 
