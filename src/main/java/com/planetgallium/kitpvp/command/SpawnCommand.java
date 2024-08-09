@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.cryptomorin.xseries.messages.Titles;
 import com.planetgallium.kitpvp.Game;
 import com.planetgallium.kitpvp.game.Arena;
 import com.planetgallium.kitpvp.util.CacheManager;
@@ -80,7 +81,8 @@ public class SpawnCommand extends EPCommand {
 							cancel();
 							return;
 						}
-						
+						Titles.sendTitle(p, 0, 21, 0, Toolkit.translate("&b&l传送中 请勿移动"),
+								Toolkit.translate("将在 &b" + time + " &f后传送到保护区域"));
 						p.sendMessage(
 								messages.fetchString("Messages.Commands.Time").replace("%time%", String.valueOf(time)));
 						Toolkit.playSoundToPlayer(p, "BLOCK_NOTE_BLOCK_SNARE", 1);

@@ -24,7 +24,6 @@ public class LeaveListener implements Listener {
 	public void onLeave(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
 		if (Toolkit.inArena(p)) {
-			e.setQuitMessage(null);
 			arena.deletePlayer(p);
 		}
 	}

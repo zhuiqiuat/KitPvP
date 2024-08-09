@@ -43,7 +43,6 @@ public class JoinListener implements Listener {
 		}
 
 		if (Toolkit.inArena(p)) {
-			e.setJoinMessage(null);
 			if (config.getBoolean("Arena.ClearInventoryOnJoin")) {
 				p.getInventory().clear();
 				p.getInventory().setArmorContents(null);
