@@ -10,6 +10,7 @@ import com.planetgallium.kitpvp.api.Kit;
 import com.planetgallium.kitpvp.api.PlayerSelectKitEvent;
 import com.planetgallium.kitpvp.item.AttributeParser;
 import com.planetgallium.kitpvp.util.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +27,6 @@ public class Kits {
 	private final Arena arena;
 	private final Resources resources;
 	private final Resource messages;
-
 	private final Map<String, String> playerKits;
 
 	public Kits(Game plugin, Arena arena) {

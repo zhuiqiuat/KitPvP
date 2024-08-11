@@ -84,6 +84,7 @@ public class Arena {
 
 		p.setExp(0f);
 		p.setFoodLevel(20);
+		
 
 		if (giveItems) {
 			giveArenaItems(p);

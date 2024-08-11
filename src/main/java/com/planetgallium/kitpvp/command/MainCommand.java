@@ -207,7 +207,7 @@ public class MainCommand implements CommandExecutor {
 				Toolkit.translate("&7- &b/kp setstats <player> <type> <amount> &7Change stats of a player."));
 		sender.sendMessage(Toolkit.translate(" "));
 		sender.sendMessage(Toolkit
-				.translate("&3&m                                                                               "));
+				.translate("&3&m                                                           "));
 	}
 
 	private void executeReloadCommand(CommandSender sender) {
@@ -228,8 +228,7 @@ public class MainCommand implements CommandExecutor {
 
 		String serverVersion = Bukkit.getBukkitVersion() + " "
 				+ (Bukkit.getVersion().contains("Spigot") ? "(Spigot)" : "(Other)");
-		String pluginVersion = plugin.getDescription().getVersion() + " "
-				+ (plugin.needsUpdate() ? "&c(Requires Update)" : "&a(Latest Version)");
+		String pluginVersion = plugin.getDescription().getVersion();
 		String isSpawnSet = (config.contains("Arenas") ? "&aConfigured" : "&cUnconfigured");
 
 		sender.sendMessage(Toolkit.translate("&7[&b&lKIT-PVP&7] &aServer Version: &7" + serverVersion));

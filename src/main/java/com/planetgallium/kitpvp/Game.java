@@ -31,8 +31,6 @@ public class Game extends JavaPlugin implements Listener {
 	private Infobase database;
 	private Resources resources;
 
-	private String updateVersion = "Error";
-	private boolean needsUpdate = false;
 	private boolean hasPlaceholderAPI = false;
 	private boolean hasWorldGuard = false;
 
@@ -76,13 +74,6 @@ public class Game extends JavaPlugin implements Listener {
 
 		new Metrics(this);
 
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				checkUpdate();
-			}
-		}.runTaskAsynchronously(this);
-
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 			Bukkit.getConsoleSender()
 					.sendMessage(Toolkit.translate("[&b&lKIT-PVP&7] &7Hooking into &bPlaceholderAPI&7..."));
@@ -110,24 +101,6 @@ public class Game extends JavaPlugin implements Listener {
 				CacheManager.getUUIDCache().put(player.getName(), player.getUniqueId().toString());
 			}
 		}
-	}
-
-	private void checkUpdate() {
-		Updater.of(this).resourceId(27107).handleResponse((versionResponse, version) -> {
-			switch (versionResponse) {
-			case FOUND_NEW:
-				Bukkit.getConsoleSender()
-						.sendMessage(Toolkit.translate("&7[&b&lKIT-PVP&7] &aNew version found! Please update to v"
-								+ version + " on the Spigot page."));
-				needsUpdate = true;
-				updateVersion = version;
-				break;
-			case UNAVAILABLE:
-				Bukkit.getConsoleSender()
-						.sendMessage(Toolkit.translate("&7[&b&lKIT-PVP&7] &cUnable to perform an update check."));
-				break;
-			}
-		}).check();
 	}
 
 	@EventHandler
@@ -170,14 +143,6 @@ public class Game extends JavaPlugin implements Listener {
 
 	public boolean hasWorldGuard() {
 		return hasWorldGuard;
-	}
-
-	public boolean needsUpdate() {
-		return needsUpdate;
-	}
-
-	public String getUpdateVersion() {
-		return updateVersion;
 	}
 
 	public Arena getArena() {
