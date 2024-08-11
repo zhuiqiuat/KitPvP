@@ -65,7 +65,6 @@ public class Game extends JavaPlugin implements Listener {
 		pm.registerEvents(new AbilityListener(this), this);
 		pm.registerEvents(new TrackerListener(this), this);
 		pm.registerEvents(new MenuListener(this), this);
-		pm.registerEvents(getArena().getKillStreaks(), this);
 
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		getCommand("kitpvp").setExecutor(new MainCommand(this));
