@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.planetgallium.kitpvp.Game;
 import com.planetgallium.kitpvp.game.Arena;
+import com.planetgallium.kitpvp.game.KillStreaks;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class DeathListener implements Listener {
 	private final Arena arena;
 	private final Resources resources;
 	private final Resource config;
-	
+
 	public DeathListener(Game plugin) {
 		this.plugin = plugin;
 		this.arena = plugin.getArena();
@@ -66,9 +67,7 @@ public class DeathListener implements Listener {
 
 			Toolkit.runCommands(victim, config.getStringList("Death.Commands"), "%victim%", victim.getName());
 
-			broadcast(victim.getWorld(),
-					config.fetchString("Death.Sound.Sound"),
-					config.getInt("Death.Sound.Pitch"));
+			broadcast(victim.getWorld(), config.fetchString("Death.Sound.Sound"), config.getInt("Death.Sound.Pitch"));
 		}
 
 	}
@@ -107,17 +106,15 @@ public class DeathListener implements Listener {
 			}.runTaskLater(plugin, 1L);
 
 			arena.removePlayer(victim);
-			
+
 			new BukkitRunnable() {
 				int time = config.getInt("Death.Title.Time");
 
 				@Override
 				public void run() {
 					if (time != 0) {
-						Titles.sendTitle(victim, 0, 21, 0,
-								config.fetchString("Death.Title.Title"),
-								config.fetchString("Death.Title.Subtitle")
-										.replace("%seconds%", String.valueOf(time)));
+						Titles.sendTitle(victim, 0, 21, 0, config.fetchString("Death.Title.Title"),
+								config.fetchString("Death.Title.Subtitle").replace("%seconds%", String.valueOf(time)));
 						Toolkit.playSoundToPlayer(victim, "UI_BUTTON_CLICK", 1);
 						time--;
 					} else {
@@ -144,8 +141,7 @@ public class DeathListener implements Listener {
 				@Override
 				public void run() {
 					arena.addPlayer(victim, true, config.getBoolean("Arena.GiveItemsOnRespawn"));
-					Toolkit.runCommands(victim, config.getStringList("Respawn.Commands"),
-							"none", "none");
+					Toolkit.runCommands(victim, config.getStringList("Respawn.Commands"), "none", "none");
 				}
 			}.runTaskLater(plugin, 1L);
 		}
@@ -192,8 +188,8 @@ public class DeathListener implements Listener {
 			broadcast(victim.getWorld(), getDeathMessage(victim, killer, "Player"));
 			creditWithKill(victim, killer);
 
-		} else if ((cause == DamageCause.BLOCK_EXPLOSION || cause == DamageCause.ENTITY_EXPLOSION) &&
-				getExplodedEntity(victim.getLastDamageCause()).getType() == EntityType.PRIMED_TNT) {
+		} else if ((cause == DamageCause.BLOCK_EXPLOSION || cause == DamageCause.ENTITY_EXPLOSION)
+				&& getExplodedEntity(victim.getLastDamageCause()).getType() == EntityType.PRIMED_TNT) {
 			String bomberName = getExplodedEntity(victim.getLastDamageCause()).getCustomName();
 			Player killer = Toolkit.getPlayer(victim.getWorld(), bomberName);
 
@@ -229,17 +225,30 @@ public class DeathListener implements Listener {
 //		if (e instanceof EntityDamageByBlockEvent) {
 //			EntityDamageByBlockEvent blownUpEvent2 = (EntityDamageByBlockEvent) e;
 //			return blownUpEvent2.getDamager();
-		/*} else if (e instanceof EntityDamageByEntityEvent) { */
-			EntityDamageByEntityEvent blownUpEvent = (EntityDamageByEntityEvent) e;
-			return blownUpEvent.getDamager();
-		/*}*/
+		/* } else if (e instanceof EntityDamageByEntityEvent) { */
+		EntityDamageByEntityEvent blownUpEvent = (EntityDamageByEntityEvent) e;
+		return blownUpEvent.getDamager();
+		/* } */
 	}
 
 	private void creditWithKill(Player victim, Player killer) {
 		if (victim != null && killer != null) {
 			if (!victim.getName().equals(killer.getName())) {
 				arena.getStats().addToStat("kills", killer.getName(), 1);
-				arena.getStats().addExperience(killer, resources.getLevels().getInt("Levels.Options.Experience-Given-On-Kill"));
+				arena.getStats().addExperience(killer,
+						resources.getLevels().getInt("Levels.Options.Experience-Given-On-Kill"));
+
+				KillStreaks ks = arena.getKillStreaks();
+				if (killer != null && !killer.getName().equals(victim.getName())) {
+					ks.getKills().put(killer.getName(), ks.getStreak(killer.getName()) + 1);
+					ks.runStreakCase("KillStreaks", killer);
+					ks.runStreakCase("EndStreaks", victim);
+					ks.getKills().put(victim.getName(), 0);
+
+				} else {
+					ks.getKills().put(victim.getName(), 0);
+					ks.runStreakCase("EndStreaks", victim);
+				}
 
 				List<String> killCommands = config.getStringList("Kill.Commands");
 				killCommands = Toolkit.replaceInList(killCommands, "%victim%", victim.getName());
@@ -267,10 +276,11 @@ public class DeathListener implements Listener {
 		}
 
 		if (killer != null) {
-			deathMessage = deathMessage.replace("%killer%", killer.getName())
-					.replace("%killer_health%", String.valueOf(Toolkit.round(killer.getHealth(), 2)));
+			deathMessage = deathMessage.replace("%killer%", killer.getName()).replace("%killer_health%",
+					String.valueOf(Toolkit.round(killer.getHealth(), 2)));
 		} else {
-			deathMessage = config.fetchString("Death.Messages.Unknown"); // if killer is null (left the server, or some other unknown reason)
+			deathMessage = config.fetchString("Death.Messages.Unknown"); // if killer is null (left the server, or some
+																			// other unknown reason)
 		}
 
 		if (victim != null) {

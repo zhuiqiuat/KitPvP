@@ -26,8 +26,7 @@ public class ArrowListener implements Listener {
 
 	@EventHandler
 	public void onArrowHit(EntityDamageByEntityEvent e) {
-		if (Toolkit.inArena(e.getEntity()) &&
-				e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
+		if (Toolkit.inArena(e.getEntity()) && e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
 			Player damagedPlayer = (Player) e.getEntity();
 			Arrow arrow = (Arrow) e.getDamager();
 
@@ -52,7 +51,9 @@ public class ArrowListener implements Listener {
 
 					if (shooter.hasPermission("kp.arrowmessage")) {
 						if (health != 20.0) {
-							shooter.sendMessage(config.fetchString("Combat.ArrowHit.Message").replace("%player%", damagedPlayer.getName()).replace("%health%", String.valueOf(health)));
+							shooter.sendMessage(config.fetchString("Combat.ArrowHit.Message")
+									.replace("%player%", damagedPlayer.getName())
+									.replace("%health%", String.valueOf(health)));
 						}
 					}
 				}
@@ -63,7 +64,8 @@ public class ArrowListener implements Listener {
 	private void doArrowReturnIfEnabled(Player shooter, Player damagedPlayer) {
 		if (config.getBoolean("Combat.ArrowReturn.Enabled")) {
 
-			// Do not do arrow return if damagedPlayer does not have a kit (if NoKitProtection is enabled)
+			// Do not do arrow return if damagedPlayer does not have a kit (if
+			// NoKitProtection is enabled)
 			if (config.getBoolean("Arena.NoKitProtection")) {
 				if (!plugin.getArena().getKits().playerHasKit(damagedPlayer.getName())) {
 					return;

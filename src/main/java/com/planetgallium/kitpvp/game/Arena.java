@@ -84,7 +84,6 @@ public class Arena {
 
 		p.setExp(0f);
 		p.setFoodLevel(20);
-		
 
 		if (giveItems) {
 			giveArenaItems(p);
@@ -92,6 +91,9 @@ public class Arena {
 
 		if (toSpawn) {
 			toSpawn(p, p.getWorld().getName());
+		}
+		if (!killstreaks.getKills().containsKey(p.getName())) {
+			killstreaks.getKills().put(p.getName(), 0);
 		}
 
 		if (resources.getScoreboard().getBoolean("Scoreboard.General.Enabled")) {
@@ -103,22 +105,19 @@ public class Arena {
 		CacheManager.getPlayerAbilityCooldowns(p.getName()).clear();
 		CacheManager.getPotionSwitcherUsers().remove(p.getName());
 
-		for (PotionEffect effect : p.getActivePotionEffects()) {
+		for (PotionEffect effect : p.getActivePotionEffects())
 			p.removePotionEffect(effect.getType());
-		}
 
 		kits.resetPlayerKit(p.getName());
 
-		if (config.getBoolean("Arena.ResetKillStreakOnLeave")) {
+		if (config.getBoolean("Arena.ResetKillStreakOnLeave"))
 			getKillStreaks().resetStreak(p);
-		}
 
 		p.setExp(0f);
 		p.setFoodLevel(20);
 
-		if (resources.getScoreboard().getBoolean("Scoreboard.General.Enabled")) {
+		if (resources.getScoreboard().getBoolean("Scoreboard.General.Enabled"))
 			updateScoreboards(p, true);
-		}
 
 		stats.pushCachedStatsToDatabase(p.getName(), false); // cached stats are pushed to database on death
 		hitCache.remove(p.getName());
@@ -129,6 +128,9 @@ public class Arena {
 			p.getInventory().clear();
 			p.getInventory().setArmorContents(null);
 		}
+
+		if (resources.getConfig().getBoolean("Arena.ResetKillStreakOnLeave"))
+			killstreaks.getKills().put(p.getName(), 0);
 
 		CacheManager.getPlayerAbilityCooldowns(p.getName()).clear();
 		hitCache.remove(p.getName());

@@ -2,6 +2,7 @@ package com.planetgallium.kitpvp.listener;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.planetgallium.kitpvp.Game;
+import com.planetgallium.kitpvp.util.CacheManager;
 import com.planetgallium.kitpvp.util.Resource;
 import org.bukkit.GameMode;
 import org.bukkit.entity.*;
@@ -24,73 +25,73 @@ import com.planetgallium.kitpvp.util.Resources;
 import com.planetgallium.kitpvp.util.Toolkit;
 
 public class ArenaListener implements Listener {
-	
+
 	private final Arena arena;
 	private final Resource config;
-	
+
 	public ArenaListener(Game plugin) {
 		this.arena = plugin.getArena();
 		this.config = plugin.getResources().getConfig();
 	}
-	
+
 	@EventHandler
 	public void onBreak(BlockBreakEvent e) {
 		Player p = e.getPlayer();
-		
+
 		if (Toolkit.inArena(p) && config.getBoolean("Arena.PreventBlockBreaking")) {
 			e.setCancelled(!p.hasPermission("kp.arena.blockbreaking"));
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlace(BlockPlaceEvent e) {
 		Player p = e.getPlayer();
-		
+
 		if (Toolkit.inArena(p) && config.getBoolean("Arena.PreventBlockPlacing")) {
 			e.setCancelled(!p.hasPermission("kp.arena.blockplacing"));
 		}
-		
+
 	}
-	
+
 	@EventHandler
 	public void onItemDamage(PlayerItemDamageEvent e) {
 		if (Toolkit.inArena(e.getPlayer()) && config.getBoolean("Arena.PreventItemDurabilityDamage")) {
 			e.setCancelled(true);
 		}
 	}
-	
+
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e) {
 		Player p = e.getPlayer();
-		
+
 		if (Toolkit.inArena(p) && config.getBoolean("Arena.PreventItemDropping")) {
 			e.setCancelled(!p.hasPermission("kp.arena.itemdropping"));
 		}
 	}
-	
+
 	@EventHandler
 	public void onHunger(FoodLevelChangeEvent e) {
 		Player p = (Player) e.getEntity();
-		
+
 		if (Toolkit.inArena(p) && config.getBoolean("Arena.PreventHunger")) {
 			e.setCancelled(true);
 		}
 	}
-	
-    @EventHandler
-    public void onExplode(EntityExplodeEvent e) {
-    	if (Toolkit.inArena(e.getEntity()) && config.getBoolean("Arena.PreventBlockBreaking")) {
-    		if (e.getEntityType() == EntityType.PRIMED_TNT) { // enable TNT explosion animation
-    			e.blockList().clear();
-    			e.setCancelled(false);
-    			return;
+
+	@EventHandler
+	public void onExplode(EntityExplodeEvent e) {
+		if (Toolkit.inArena(e.getEntity()) && config.getBoolean("Arena.PreventBlockBreaking")) {
+			if (e.getEntityType() == EntityType.PRIMED_TNT) { // enable TNT explosion animation
+				e.blockList().clear();
+				e.setCancelled(false);
+				return;
 			}
 			e.setCancelled(true);
 		}
-    }
-	
-    @EventHandler
-    public void onEntityDamage(EntityDamageByEntityEvent e) {
+	}
+
+	@EventHandler
+	public void onEntityDamage(EntityDamageByEntityEvent e) {
 		if (Toolkit.inArena(e.getEntity())) {
 
 			if (e.getEntity() instanceof Player && e.getDamager() instanceof Projectile) {
@@ -99,8 +100,21 @@ public class ArenaListener implements Listener {
 				if (config.getBoolean("Arena.NoKitProtection")) {
 					if (!arena.getKits().playerHasKit(damagedPlayer.getName())) {
 						e.setCancelled(true);
+						return;
 					}
 				}
+				if (!(((Arrow) e.getDamager()).getShooter() instanceof Player))
+					return;
+				if (!config.getBoolean("PVPMode.Enable"))
+					return;
+				Player damager = (Player) ((Arrow) e.getDamager()).getShooter();
+				if (damager.equals(damagedPlayer))
+					return;
+				long time = System.currentTimeMillis();
+				CacheManager.getStatsCache().get(damagedPlayer.getName()).setLastPVPTime(time);
+				CacheManager.getStatsCache().get(damagedPlayer.getName()).setLastPVPPlayer(damager);
+				CacheManager.getStatsCache().get(damager.getName()).setLastPVPTime(time);
+				CacheManager.getStatsCache().get(damager.getName()).setLastPVPPlayer(damagedPlayer);
 
 			} else if (e.getEntity() instanceof Damageable) {
 
@@ -114,7 +128,7 @@ public class ArenaListener implements Listener {
 			}
 		}
 	}
-    
+
 	@EventHandler
 	public void onWeatherChange(WeatherChangeEvent e) {
 		if (Toolkit.inArena(e.getWorld()) && config.getBoolean("Arena.KeepWeatherAtSunny")) {
@@ -126,29 +140,28 @@ public class ArenaListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onExplosion(EntityDamageEvent e) {
 		if (e.getEntity() instanceof Player) {
 			Player damagedPlayer = (Player) e.getEntity();
-			
+
 			if (Toolkit.inArena(damagedPlayer)) {
 
-				if (e.getCause() == DamageCause.BLOCK_EXPLOSION ||
-						e.getCause() == DamageCause.ENTITY_EXPLOSION ||
-						e.getCause() == DamageCause.FIRE ||
-						e.getCause() == DamageCause.FIRE_TICK) {
+				if (e.getCause() == DamageCause.BLOCK_EXPLOSION || e.getCause() == DamageCause.ENTITY_EXPLOSION
+						|| e.getCause() == DamageCause.FIRE || e.getCause() == DamageCause.FIRE_TICK) {
 					if (config.getBoolean("Arena.NoKitProtection")) {
 						if (!arena.getKits().playerHasKit(damagedPlayer.getName())) {
 							e.setCancelled(true);
 						}
 					}
-				
+
 				} else if (e.getCause() == DamageCause.FALL) {
 
 					if (config.getBoolean("Arena.PreventFallDamage")) {
 						e.setCancelled(true);
-						// only canceling if preventing fall damage is enabled, this allows for WorldGuard to step in
+						// only canceling if preventing fall damage is enabled, this allows for
+						// WorldGuard to step in
 					}
 
 				} else if (damagedPlayer.getGameMode() == GameMode.SPECTATOR) {
@@ -157,11 +170,11 @@ public class ArenaListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
-		
+
 		if (Toolkit.inArena(p)) {
 			if (e.getClickedBlock() != null) {
 				if (e.getClickedBlock().getType() == XMaterial.CHEST.parseMaterial()) {
@@ -174,11 +187,11 @@ public class ArenaListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onPearl(PlayerTeleportEvent e) {
 		Player p = e.getPlayer();
-		
+
 		if (Toolkit.inArena(p)) {
 			if (e.getCause() == TeleportCause.ENDER_PEARL) {
 				e.setCancelled(true);
@@ -195,5 +208,5 @@ public class ArenaListener implements Listener {
 			}
 		}
 	}
-	
+
 }

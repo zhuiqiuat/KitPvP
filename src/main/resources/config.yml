@@ -55,6 +55,7 @@ Death:
   Commands: []
   Messages:
     Player: '%prefix% &b%victim% &f被 &b%killer% &f击杀'
+    PlayerQuit: '%prefix% &b%victim% &f被 &b%killer% &f打的离开了游戏'
     Shot: '%prefix% &b%victim% &f被 &b%killer% &f用弓箭击杀'
     Fall: '%prefix% &b%victim% &f摔死了'
     Void: '%prefix% &b%victim% &f掉出了这个世界'
@@ -133,3 +134,6 @@ Other:
 Spawn:
   Time: 5
   Enabled: true
+PVPMode:
+  Enable: true
+  Time: 5000

@@ -72,8 +72,6 @@ public class Game extends JavaPlugin implements Listener {
 		spawnCommand = new SpawnCommand(this);
 		getCommand("spawn").setExecutor(spawnCommand);
 
-		new Metrics(this);
-
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 			Bukkit.getConsoleSender()
 					.sendMessage(Toolkit.translate("[&b&lKIT-PVP&7] &7Hooking into &bPlaceholderAPI&7..."));
