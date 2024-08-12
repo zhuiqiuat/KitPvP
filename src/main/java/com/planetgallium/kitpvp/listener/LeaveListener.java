@@ -46,6 +46,12 @@ public class LeaveListener implements Listener {
 				Player killer = pd.getLastPVPPlayer();
 				if (killer == null)
 					return;
+				if (!killer.isOnline())
+					return;
+				if (!arena.getKits().playerHasKit(killer.getName()))
+					return;
+				if (!arena.getKits().playerHasKit(victim.getName()))
+					return;
 				creditWithKill(victim, killer);
 				broadcast(victim.getWorld(), getDeathMessage(victim, killer, "PlayerQuit"));
 				broadcast(victim.getWorld(), config.fetchString("Death.Sound.Sound"),

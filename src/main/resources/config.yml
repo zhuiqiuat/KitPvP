@@ -116,6 +116,7 @@ Arena:
   PreventFallDamage: false
   PreventDeathDrops: true
   PreventArenaSignUseWithKit: true
+  PreventItemCraft: true
   KeepWeatherAtSunny: true
   GiveItemsOnClear: true
   GiveItemsOnRespawn: true
