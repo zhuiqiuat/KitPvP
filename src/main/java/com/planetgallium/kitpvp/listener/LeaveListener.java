@@ -44,14 +44,26 @@ public class LeaveListener implements Listener {
 			if ((time - pd.getLastPVPTime()) < config.getInt("PVPMode.Time")) {
 				Player victim = p;
 				Player killer = pd.getLastPVPPlayer();
-				if (killer == null)
+				if (killer == null) {
+					arena.deletePlayer(p);
 					return;
-				if (!killer.isOnline())
+				}
+				if (!killer.isOnline()) {
+					arena.deletePlayer(p);
 					return;
-				if (!arena.getKits().playerHasKit(killer.getName()))
+				}
+				if (!CacheManager.getStatsCache().get(killer.getName()).getLastPVPPlayer().equals(victim)) {
+					arena.deletePlayer(p);
 					return;
-				if (!arena.getKits().playerHasKit(victim.getName()))
+				}
+				if (!arena.getKits().playerHasKit(killer.getName())) {
+					arena.deletePlayer(p);
 					return;
+				}
+				if (!arena.getKits().playerHasKit(victim.getName())) {
+					arena.deletePlayer(p);
+					return;
+				}
 				creditWithKill(victim, killer);
 				broadcast(victim.getWorld(), getDeathMessage(victim, killer, "PlayerQuit"));
 				broadcast(victim.getWorld(), config.fetchString("Death.Sound.Sound"),
