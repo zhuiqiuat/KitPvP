@@ -18,7 +18,7 @@ public class PlayerData {
 	private long lastPVPTime = 0;
 	@Getter
 	@Setter
-	private Player lastPVPPlayer;
+	private Player lastPVPPlayer = null;
 
 	public PlayerData(int kills, int deaths, int experience, int level) {
 		this.data = new HashMap<>();

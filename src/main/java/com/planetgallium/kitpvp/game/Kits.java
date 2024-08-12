@@ -239,10 +239,19 @@ public class Kits {
 		p.sendMessage(messages.fetchString("Messages.Commands.Kit").replace("%kit%", kit.getName()));
 		Toolkit.playSoundToPlayer(p, "ENTITY_HORSE_ARMOR", 1);
 
+		if (CacheManager.getStatsCache().get(p.getName()).getLastPVPPlayer() != null) {
+			CacheManager.getStatsCache().get(p.getName()).setLastPVPPlayer(null);
+			CacheManager.getStatsCache().get(p.getName()).setLastPVPTime(0);
+		}
+
 		Bukkit.getPluginManager().callEvent(new PlayerSelectKitEvent(player, kit));
 
 		setPlayerKit(p.getName(), kit.getName());
-
+		Iterator<String> tmp = playerKits.keySet().iterator();
+		while (tmp.hasNext()) {
+			Player tmp2 = Bukkit.getPlayer(tmp.next());
+			tmp2.showPlayer(plugin, p);
+		}
 		arena.toRandomGameSpawn(p, p.getWorld().getName());
 
 		Cooldown kitCooldown = kit.getCooldown();
@@ -303,8 +312,13 @@ public class Kits {
 		return playerKits.containsKey(playerName);
 	}
 
-	public void resetPlayerKit(String playerName) {
-		playerKits.remove(playerName);
+	public void resetPlayerKit(Player p) {
+		playerKits.remove(p.getName());
+		Iterator<String> tmp = playerKits.keySet().iterator();
+		while (tmp.hasNext()) {
+			Player tmp2 = Bukkit.getPlayer(tmp.next());
+			tmp2.hidePlayer(plugin, p);
+		}
 	}
 
 	private String trimName(String kitNameWithFileEnding) {

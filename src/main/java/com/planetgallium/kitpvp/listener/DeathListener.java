@@ -1,12 +1,10 @@
 package com.planetgallium.kitpvp.listener;
 
-import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.Titles;
 import com.planetgallium.kitpvp.util.*;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -28,15 +26,13 @@ import java.util.List;
 
 public class DeathListener implements Listener {
 
-	private final Game plugin;
 	private final Arena arena;
 	private final Resources resources;
 	private final Resource config;
 
-	public DeathListener(Game plugin) {
-		this.plugin = plugin;
-		this.arena = plugin.getArena();
-		this.resources = plugin.getResources();
+	public DeathListener() {
+		this.arena = Game.getInstance().getArena();
+		this.resources = Game.getInstance().getResources();
 		this.config = resources.getConfig();
 	}
 
@@ -83,7 +79,7 @@ public class DeathListener implements Listener {
 					public void run() {
 						arena.toSpawn(p, p.getWorld().getName());
 					}
-				}.runTaskLater(plugin, 1L);
+				}.runTaskLater(Game.getInstance(), 1L);
 			}
 		}
 	}
@@ -103,7 +99,7 @@ public class DeathListener implements Listener {
 					victim.teleport(deathLocation);
 					victim.setGameMode(GameMode.SPECTATOR);
 				}
-			}.runTaskLater(plugin, 1L);
+			}.runTaskLater(Game.getInstance(), 1L);
 
 			arena.removePlayer(victim);
 
@@ -131,7 +127,7 @@ public class DeathListener implements Listener {
 						cancel();
 					}
 				}
-			}.runTaskTimer(plugin, 0L, 20L);
+			}.runTaskTimer(Game.getInstance(), 0L, 20L);
 
 		} else {
 			arena.removePlayer(victim);
@@ -143,7 +139,7 @@ public class DeathListener implements Listener {
 					arena.addPlayer(victim, true, config.getBoolean("Arena.GiveItemsOnRespawn"));
 					Toolkit.runCommands(victim, config.getStringList("Respawn.Commands"), "none", "none");
 				}
-			}.runTaskLater(plugin, 1L);
+			}.runTaskLater(Game.getInstance(), 1L);
 		}
 	}
 
@@ -260,7 +256,7 @@ public class DeathListener implements Listener {
 						public void run() {
 							arena.updateScoreboards(killer, false);
 						}
-					}.runTaskLater(plugin, 20L);
+					}.runTaskLater(Game.getInstance(), 20L);
 				}
 			}
 		}

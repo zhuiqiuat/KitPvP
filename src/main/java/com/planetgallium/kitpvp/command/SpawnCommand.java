@@ -130,7 +130,7 @@ public class SpawnCommand extends EPCommand {
 			arena.giveArenaItems(p);
 		}
 
-		arena.getKits().resetPlayerKit(p.getName());
+		arena.getKits().resetPlayerKit(p);
 	}
 
 }

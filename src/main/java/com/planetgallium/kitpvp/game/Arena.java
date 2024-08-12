@@ -55,7 +55,7 @@ public class Arena {
 	public void addPlayer(Player p, boolean toSpawn, boolean giveItems) {
 		cooldowns.clearPlayerAbilityCooldowns(p.getName());
 
-		kits.resetPlayerKit(p.getName());
+		kits.resetPlayerKit(p);
 
 		if (config.getBoolean("Arena.ResetKillStreakOnLeave")) {
 			killstreaks.setStreak(p, 0);
@@ -108,7 +108,7 @@ public class Arena {
 		for (PotionEffect effect : p.getActivePotionEffects())
 			p.removePotionEffect(effect.getType());
 
-		kits.resetPlayerKit(p.getName());
+		kits.resetPlayerKit(p);
 
 		if (config.getBoolean("Arena.ResetKillStreakOnLeave"))
 			getKillStreaks().resetStreak(p);

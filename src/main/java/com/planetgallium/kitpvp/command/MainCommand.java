@@ -206,8 +206,7 @@ public class MainCommand implements CommandExecutor {
 		sender.sendMessage(
 				Toolkit.translate("&7- &b/kp setstats <player> <type> <amount> &7Change stats of a player."));
 		sender.sendMessage(Toolkit.translate(" "));
-		sender.sendMessage(Toolkit
-				.translate("&3&m                                                           "));
+		sender.sendMessage(Toolkit.translate("&3&m                                                           "));
 	}
 
 	private void executeReloadCommand(CommandSender sender) {
@@ -464,7 +463,7 @@ public class MainCommand implements CommandExecutor {
 			arena.giveArenaItems(p);
 		}
 
-		arena.getKits().resetPlayerKit(p.getName());
+		arena.getKits().resetPlayerKit(p);
 	}
 
 	private void sendStatsMessage(CommandSender receiver, String username) {
