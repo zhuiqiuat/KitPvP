@@ -314,10 +314,19 @@ public class Kits {
 
 	public void resetPlayerKit(Player p) {
 		playerKits.remove(p.getName());
-		Iterator<String> tmp = playerKits.keySet().iterator();
+		Iterator<? extends Player> tmp = Bukkit.getOnlinePlayers().iterator();
 		while (tmp.hasNext()) {
-			Player tmp2 = Bukkit.getPlayer(tmp.next());
-			tmp2.hidePlayer(plugin, p);
+			Player tmp2 = tmp.next();
+			if (tmp2.canSee(p))
+				continue;
+			tmp2.showPlayer(Game.getInstance(), p);
+		}
+		Iterator<String> tmp3 = playerKits.keySet().iterator();
+		while (tmp3.hasNext()) {
+			Player tmp4 = Bukkit.getPlayer(tmp3.next());
+			if (!tmp4.canSee(p))
+				continue;
+			tmp4.hidePlayer(Game.getInstance(), p);
 		}
 	}
 
