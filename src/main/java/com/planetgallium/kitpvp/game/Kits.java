@@ -250,7 +250,22 @@ public class Kits {
 		Iterator<String> tmp = playerKits.keySet().iterator();
 		while (tmp.hasNext()) {
 			Player tmp2 = Bukkit.getPlayer(tmp.next());
+			if (tmp2 == null)
+				continue;
+			if (tmp2.canSee(p))
+				continue;
 			tmp2.showPlayer(plugin, p);
+		}
+		Iterator<? extends Player> tmp3 = Bukkit.getOnlinePlayers().iterator();
+		while (tmp3.hasNext()) {
+			Player tmp4 = tmp3.next();
+			if (tmp4 == null)
+				continue;
+			if (!p.canSee(tmp4))
+				continue;
+			if (playerHasKit(tmp4.getName()))
+				continue;
+			p.hidePlayer(Game.getInstance(), tmp4);
 		}
 		arena.toRandomGameSpawn(p, p.getWorld().getName());
 
@@ -317,13 +332,17 @@ public class Kits {
 		Iterator<? extends Player> tmp = Bukkit.getOnlinePlayers().iterator();
 		while (tmp.hasNext()) {
 			Player tmp2 = tmp.next();
-			if (tmp2.canSee(p))
+			if (tmp2 == null)
 				continue;
-			tmp2.showPlayer(Game.getInstance(), p);
+			if (p.canSee(tmp2))
+				continue;
+			p.showPlayer(Game.getInstance(), tmp2);
 		}
 		Iterator<String> tmp3 = playerKits.keySet().iterator();
 		while (tmp3.hasNext()) {
 			Player tmp4 = Bukkit.getPlayer(tmp3.next());
+			if (tmp4 == null)
+				continue;
 			if (!tmp4.canSee(p))
 				continue;
 			tmp4.hidePlayer(Game.getInstance(), p);
