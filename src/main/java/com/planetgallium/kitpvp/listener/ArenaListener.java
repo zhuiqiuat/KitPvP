@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.hanging.HangingBreakEvent;
@@ -192,7 +193,6 @@ public class ArenaListener implements Listener {
 	@EventHandler
 	public void onPearl(PlayerTeleportEvent e) {
 		Player p = e.getPlayer();
-
 		if (Toolkit.inArena(p)) {
 			if (e.getCause() == TeleportCause.ENDER_PEARL) {
 				e.setCancelled(true);
@@ -217,6 +217,17 @@ public class ArenaListener implements Listener {
 		if (!Toolkit.inArena(e.getWhoClicked()))
 			return;
 		if (e.getWhoClicked().hasPermission("Arena.PreventItemCraft"))
+			return;
+		e.setCancelled(true);
+	}
+
+	@EventHandler
+	void onSignChange(SignChangeEvent e) {
+		if (!config.getBoolean("Arena.PreventSignChange"))
+			return;
+		if (!Toolkit.inArena(e.getPlayer()))
+			return;
+		if (e.getPlayer().hasPermission("Arena.PreventSignChange"))
 			return;
 		e.setCancelled(true);
 	}
