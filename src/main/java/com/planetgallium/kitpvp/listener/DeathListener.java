@@ -235,6 +235,8 @@ public class DeathListener implements Listener {
 						resources.getLevels().getInt("Levels.Options.Experience-Given-On-Kill"));
 
 				KillStreaks ks = arena.getKillStreaks();
+				CacheManager.getStatsCache().get(killer.getName()).setLastPVPPlayer(null);
+				CacheManager.getStatsCache().get(killer.getName()).setLastPVPTime(0);
 				if (killer != null && !killer.getName().equals(victim.getName())) {
 					ks.getKills().put(killer.getName(), ks.getStreak(killer.getName()) + 1);
 					ks.runStreakCase("KillStreaks", killer);
