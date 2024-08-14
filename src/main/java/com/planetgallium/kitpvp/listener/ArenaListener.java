@@ -1,11 +1,13 @@
 package com.planetgallium.kitpvp.listener;
 
-import com.cryptomorin.xseries.XMaterial;
 import com.planetgallium.kitpvp.Game;
 import com.planetgallium.kitpvp.util.CacheManager;
 import com.planetgallium.kitpvp.util.Resource;
 
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +25,7 @@ import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.weather.WeatherChangeEvent;
+
 import com.planetgallium.kitpvp.game.Arena;
 import com.planetgallium.kitpvp.util.Toolkit;
 
@@ -176,17 +179,22 @@ public class ArenaListener implements Listener {
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
-
-		if (Toolkit.inArena(p)) {
-			if (e.getClickedBlock() != null) {
-				if (e.getClickedBlock().getType() == XMaterial.CHEST.parseMaterial()) {
-					if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-						if (config.getBoolean("Arena.PreventChestOpen")) {
-							e.setCancelled(true);
-						}
-					}
-				}
-			}
+		if (!Toolkit.inArena(p))
+			return;
+		if (e.getClickedBlock() == null)
+			return;
+		if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
+			return;
+		Block b = e.getClickedBlock();
+		if (b instanceof Chest) {
+			if (!config.getBoolean("Arena.PreventChestOpen"))
+				return;
+			e.setCancelled(true);
+			return;
+		}
+		if (b.getType() == Material.POTTED_CHERRY_SAPLING) {
+			e.setCancelled(true);
+			return;
 		}
 	}
 
