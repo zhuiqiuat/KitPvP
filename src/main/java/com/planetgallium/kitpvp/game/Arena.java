@@ -25,7 +25,6 @@ public class Arena {
 	private final Map<String, String> hitCache;
 
 	private final Utilities utilties;
-	private final Leaderboards leaderboards;
 	private final Stats stats;
 	private final Kits kits;
 	private final Abilities abilities;
@@ -43,7 +42,6 @@ public class Arena {
 		this.hitCache = new HashMap<>();
 
 		this.utilties = new Utilities(plugin, this);
-		this.leaderboards = new Leaderboards(plugin);
 		this.stats = new Stats(plugin, this);
 		this.kits = new Kits(plugin, this);
 		this.abilities = new Abilities(plugin);
@@ -214,10 +212,6 @@ public class Arena {
 
 	public Utilities getUtilities() {
 		return utilties;
-	}
-
-	public Leaderboards getLeaderboards() {
-		return leaderboards;
 	}
 
 	public Kits getKits() {
