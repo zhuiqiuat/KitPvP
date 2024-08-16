@@ -10,6 +10,8 @@ import lombok.Setter;
 
 public class PlayerData {
 	@Getter
+	private final Player p;
+	@Getter
 	private final Map<String, Integer> data;
 	@Getter
 	private final Map<String, Long> kitCooldowns;
@@ -20,7 +22,8 @@ public class PlayerData {
 	@Setter
 	private Player lastPVPPlayer = null;
 
-	public PlayerData(int kills, int deaths, int experience, int level) {
+	public PlayerData(Player p, int kills, int deaths, int experience, int level, int maxstreaks) {
+		this.p = p;
 		this.data = new HashMap<>();
 		this.kitCooldowns = new HashMap<>();
 
@@ -28,6 +31,7 @@ public class PlayerData {
 		data.put("deaths", deaths);
 		data.put("experience", experience);
 		data.put("level", level);
+		data.put("maxstreaks", maxstreaks);
 	}
 
 	public void setData(String identifier, int value) {

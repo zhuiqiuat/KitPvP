@@ -1,7 +1,6 @@
 package com.planetgallium.kitpvp.listener;
 
 import com.planetgallium.kitpvp.Game;
-import com.planetgallium.kitpvp.util.CacheManager;
 import com.planetgallium.kitpvp.util.Resource;
 
 import org.bukkit.GameMode;
@@ -116,10 +115,10 @@ public class ArenaListener implements Listener {
 				if (damager.equals(damagedPlayer))
 					return;
 				long time = System.currentTimeMillis();
-				CacheManager.getStatsCache().get(damagedPlayer.getName()).setLastPVPTime(time);
-				CacheManager.getStatsCache().get(damagedPlayer.getName()).setLastPVPPlayer(damager);
-				CacheManager.getStatsCache().get(damager.getName()).setLastPVPTime(time);
-				CacheManager.getStatsCache().get(damager.getName()).setLastPVPPlayer(damagedPlayer);
+				arena.getStats().getOrCreateStatsCache(damagedPlayer).setLastPVPTime(time);
+				arena.getStats().getOrCreateStatsCache(damagedPlayer).setLastPVPPlayer(damager);
+				arena.getStats().getOrCreateStatsCache(damager).setLastPVPTime(time);
+				arena.getStats().getOrCreateStatsCache(damager).setLastPVPPlayer(damagedPlayer);
 
 			} else if (e.getEntity() instanceof Damageable) {
 

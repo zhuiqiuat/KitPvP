@@ -7,13 +7,11 @@ import com.planetgallium.kitpvp.util.CacheManager;
 import com.planetgallium.kitpvp.util.Cooldown;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
-
 public class Cooldowns {
 
 	private final Stats stats;
 	private final Infobase database;
-	
+
 	public Cooldowns(Game plugin, Arena arena) {
 		this.stats = arena.getStats();
 		this.database = plugin.getDatabase();
@@ -27,9 +25,9 @@ public class Cooldowns {
 		CacheManager.getPlayerAbilityCooldowns(playerName).clear();
 	}
 
-	public void setKitCooldown(String username, String kitName) {
+	public void setKitCooldown(Player p, String kitName) {
 		long timeKitLastUsed = System.currentTimeMillis() / 1000;
-		stats.getOrCreateStatsCache(username).addKitCooldown(kitName, timeKitLastUsed);
+		stats.getOrCreateStatsCache(p).addKitCooldown(kitName, timeKitLastUsed);
 	}
 
 	public Cooldown getRemainingCooldown(Player p, Object type) {
@@ -41,7 +39,8 @@ public class Cooldowns {
 		if (type instanceof Kit) {
 
 			Kit kit = (Kit) type;
-			if (kit.getCooldown() == null) return noCooldown;
+			if (kit.getCooldown() == null)
+				return noCooldown;
 
 			Object timeLastUsedResult = database.getData(kit.getName() + "_cooldowns", "last_used", p.getName());
 			if (timeLastUsedResult != null) {
@@ -54,8 +53,8 @@ public class Cooldowns {
 		} else if (type instanceof Ability) {
 
 			Ability ability = (Ability) type;
-			if (ability.getCooldown() == null ||
-					!CacheManager.getPlayerAbilityCooldowns(p.getName()).containsKey(ability.getName()))
+			if (ability.getCooldown() == null
+					|| !CacheManager.getPlayerAbilityCooldowns(p.getName()).containsKey(ability.getName()))
 				return noCooldown;
 
 			timeLastUsedSeconds = CacheManager.getPlayerAbilityCooldowns(p.getName()).get(ability.getName()).intValue();
@@ -66,5 +65,5 @@ public class Cooldowns {
 		int cooldownRemainingSeconds = (int) (timeLastUsedSeconds + actionCooldownSeconds - currentTimeSeconds);
 		return new Cooldown(cooldownRemainingSeconds);
 	}
-	
+
 }

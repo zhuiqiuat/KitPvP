@@ -4,6 +4,8 @@ import com.planetgallium.database.*;
 import com.planetgallium.database.Record;
 import com.planetgallium.kitpvp.Game;
 import com.planetgallium.kitpvp.util.*;
+
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -33,7 +35,8 @@ public class Infobase {
 				new Record(new Field("uuid", DataType.FIXED_STRING, Infobase.UUID_MAX_CHARACTERS),
 						new Field("username", DataType.STRING, Infobase.USERNAME_MAX_CHARACTERS),
 						new Field("kills", DataType.INTEGER), new Field("deaths", DataType.INTEGER),
-						new Field("experience", DataType.INTEGER), new Field("level", DataType.INTEGER)));
+						new Field("experience", DataType.INTEGER), new Field("level", DataType.INTEGER),
+						new Field("maxstreaks", DataType.INTEGER)));
 
 		// Kit Cooldowns
 		for (String kitName : resources.getPluginDirectoryFiles("kits", false)) {
@@ -60,8 +63,8 @@ public class Infobase {
 		}
 	}
 
-	public boolean isPlayerRegistered(String username) {
-		String uuid = usernameToUUID(username);
+	public boolean isPlayerRegistered(Player p) {
+		String uuid = usernameToUUID(p.getName());
 		return tableContainsUUID("stats", uuid);
 	}
 
@@ -78,7 +81,8 @@ public class Infobase {
 					new Field("username", DataType.STRING, p.getName(), Infobase.USERNAME_MAX_CHARACTERS),
 					new Field("kills", DataType.INTEGER, 0), new Field("deaths", DataType.INTEGER, 0),
 					new Field("experience", DataType.INTEGER, 0),
-					new Field("level", DataType.INTEGER, resources.getLevels().getInt("Levels.Options.Minimum-Level")));
+					new Field("level", DataType.INTEGER, resources.getLevels().getInt("Levels.Options.Minimum-Level")),
+					new Field("maxstreaks", DataType.INTEGER, 0));
 			statsTable.insertRecord(statsRecord);
 		} else {
 			// check if stored username needs changing if a player changed their username
@@ -94,7 +98,7 @@ public class Infobase {
 
 		// put stats into stats cache
 		playerRecord = statsTable.getRecord(uuidField("uuid", p.getUniqueId().toString()));
-		CacheManager.getStatsCache().put(p.getName(), recordToPlayerData(playerRecord));
+		CacheManager.getStatsCache().put(p, recordToPlayerData(p, playerRecord));
 	}
 
 	public void exportStats() {
@@ -195,10 +199,10 @@ public class Infobase {
 		}
 	}
 
-	public void setStatsData(String username, PlayerData playerData) {
+	public void setStatsData(Player p, PlayerData playerData) {
 		if (verifyTableExists("stats")) {
 			Table statsTable = database.getTable("stats");
-			Field uuidField = uuidField("username", username);
+			Field uuidField = uuidField("username", p.getName());
 
 			List<Field> fieldsToUpdate = new ArrayList<>();
 			for (String statIdentifier : playerData.getData().keySet()) {
@@ -219,7 +223,7 @@ public class Infobase {
 				String kitCooldownTableName = "{kit_name}_cooldowns".replace("{kit_name}", kitNameWithCooldown);
 				if (verifyTableExists(kitCooldownTableName)) {
 					Table kitCooldownTable = database.getTable(kitCooldownTableName);
-					Record cooldownRecord = new Record(uuidField("username", username),
+					Record cooldownRecord = new Record(uuidField("username", p.getName()),
 							new Field("last_used", DataType.INTEGER, timeKitLastUsed));
 
 					kitCooldownTable.updateOrInsertRecord(cooldownRecord);
@@ -245,21 +249,21 @@ public class Infobase {
 		return null;
 	}
 
-	public PlayerData recordToPlayerData(Record playerRecord) {
-		PlayerData playerData = new PlayerData(-1, -1, -1, -1);
+	public PlayerData recordToPlayerData(Player p, Record playerRecord) {
+		PlayerData playerData = new PlayerData(p, -1, -1, -1, -1, -1);
 		for (String statIdentifier : playerData.getData().keySet()) {
 			playerData.setData(statIdentifier, (int) playerRecord.getFieldValue(statIdentifier));
 		}
 		return playerData;
 	}
 
-	public PlayerData getStatsData(String username) {
-		PlayerData playerData = new PlayerData(-1, -1, -1, -1);
+	public PlayerData getStatsData(Player p) {
+		PlayerData playerData = new PlayerData(p, -1, -1, -1, -1, -1);
 		if (verifyTableExists("stats")) {
 			Table statsTable = database.getTable("stats");
 
-			Record playerRecord = statsTable.getRecord(uuidField("username", username));
-			return recordToPlayerData(playerRecord);
+			Record playerRecord = statsTable.getRecord(uuidField("username", p.getName()));
+			return recordToPlayerData(p, playerRecord);
 		}
 		return playerData;
 	}

@@ -4,20 +4,13 @@ import com.planetgallium.kitpvp.Game;
 import com.planetgallium.kitpvp.api.Kit;
 import com.planetgallium.kitpvp.game.Arena;
 import com.planetgallium.kitpvp.util.*;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainCommand implements CommandExecutor {
 
@@ -84,15 +77,15 @@ public class MainCommand implements CommandExecutor {
 				executeKitCommand(sender, args);
 				return true;
 			}
-
-		} else if (args.length == 4) {
-
-			if (isCommand(args, sender, "setstats", "kp.command.setstats")) {
-				executeSetStatsCommand(sender, args);
-				return true;
-			}
-
 		}
+//		} else if (args.length == 4) {
+//
+//			if (isCommand(args, sender, "setstats", "kp.command.setstats")) {
+//				executeSetStatsCommand(sender, args);
+//				return true;
+//			}
+//
+//		}
 
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
@@ -183,8 +176,6 @@ public class MainCommand implements CommandExecutor {
 	private void executeHelpCommand(CommandSender sender) {
 		sender.sendMessage(Toolkit.translate("&3&m           &r &b&l职业战争命令帮助 &3&m             "));
 		sender.sendMessage(Toolkit.translate(" "));
-		sender.sendMessage(Toolkit.translate("&7- &b/kp &7Displays information about KitPvP."));
-		sender.sendMessage(Toolkit.translate("&7- &b/kp help &7Displays the help message."));
 		sender.sendMessage(Toolkit.translate("&7- &b/kp reload &7Reloads the configuration files."));
 		sender.sendMessage(Toolkit.translate("&7- &b/kp debug &7Prints debug information."));
 		sender.sendMessage(Toolkit.translate("&7- &b/kp addspawn &7Adds a spawn to an arena."));
@@ -203,8 +194,6 @@ public class MainCommand implements CommandExecutor {
 		sender.sendMessage(Toolkit.translate("&7- &b/kp stats &7View your stats."));
 		sender.sendMessage(Toolkit.translate("&7- &b/kp stats <player> &7View the stats of another player."));
 		sender.sendMessage(Toolkit.translate("&7- &b/kp menu &7Displays the kits menu."));
-		sender.sendMessage(
-				Toolkit.translate("&7- &b/kp setstats <player> <type> <amount> &7Change stats of a player."));
 		sender.sendMessage(Toolkit.translate(" "));
 		sender.sendMessage(Toolkit.translate("&3&m                                                           "));
 	}
@@ -279,12 +268,16 @@ public class MainCommand implements CommandExecutor {
 
 	private void executeStatsCommandOther(CommandSender sender, String[] args) {
 		String targetName = args[1];
-
-		if (plugin.getDatabase().isPlayerRegistered(targetName)) {
-			sendStatsMessage(sender, targetName);
-		} else {
+		Player p = Bukkit.getPlayer(targetName);
+		if (p == null) {
 			sender.sendMessage(messages.fetchString("Messages.Error.Offline"));
+			return;
 		}
+		if (!arena.getStats().isPlayerRegistered(p)) {
+			sender.sendMessage(messages.fetchString("Messages.Error.Offline"));
+			return;
+		}
+		sendStatsMessage(sender, targetName);
 	}
 
 	private void executeKitCommand(CommandSender sender, String[] args) {
@@ -304,37 +297,37 @@ public class MainCommand implements CommandExecutor {
 		}
 	}
 
-	private void executeSetStatsCommand(CommandSender sender, String[] args) {
-		String playerName = args[1];
-		String statsIdentifier = args[2];
-		String possibleAmount = args[3];
-
-		if (isValidStatIdentifier(statsIdentifier, true)) {
-
-			if (!StringUtils.isNumeric(possibleAmount)) {
-				sender.sendMessage(resources.getMessages().fetchString("Messages.Error.InvalidNumber")
-						.replace("%number%", possibleAmount));
-			}
-
-			String playerUUID = plugin.getDatabase().usernameToUUID(playerName);
-
-			if (playerUUID == null) {
-				sender.sendMessage(resources.getMessages().fetchString("Messages.Error.Offline"));
-			}
-
-			int amount = Integer.parseInt(possibleAmount);
-			arena.getStats().setStat(statsIdentifier, playerName, amount);
-			arena.getStats().pushCachedStatsToDatabase(playerName, false);
-
-			sender.sendMessage(
-					resources.getMessages().fetchString("Messages.Commands.SetStats").replace("%player%", playerName)
-							.replace("%amount%", String.valueOf(amount)).replace("%type%", statsIdentifier));
-
-		} else {
-			sender.sendMessage(resources.getMessages().fetchString("Messages.Error.InvalidType")
-					.replace("%type%", statsIdentifier).replace("%types%", "kills, deaths, level, experience"));
-		}
-	}
+//	private void executeSetStatsCommand(CommandSender sender, String[] args) {
+//		String playerName = args[1];
+//		String statsIdentifier = args[2];
+//		String possibleAmount = args[3];
+//
+//		if (isValidStatIdentifier(statsIdentifier, true)) {
+//
+//			if (!StringUtils.isNumeric(possibleAmount)) {
+//				sender.sendMessage(resources.getMessages().fetchString("Messages.Error.InvalidNumber")
+//						.replace("%number%", possibleAmount));
+//			}
+//
+//			String playerUUID = plugin.getDatabase().usernameToUUID(playerName);
+//
+//			if (playerUUID == null) {
+//				sender.sendMessage(resources.getMessages().fetchString("Messages.Error.Offline"));
+//			}
+//
+//			int amount = Integer.parseInt(possibleAmount);
+//			arena.getStats().setStat(statsIdentifier, playerName, amount);
+//			arena.getStats().pushCachedStatsToDatabase(playerName, false);
+//
+//			sender.sendMessage(
+//					resources.getMessages().fetchString("Messages.Commands.SetStats").replace("%player%", playerName)
+//							.replace("%amount%", String.valueOf(amount)).replace("%type%", statsIdentifier));
+//
+//		} else {
+//			sender.sendMessage(resources.getMessages().fetchString("Messages.Error.InvalidType")
+//					.replace("%type%", statsIdentifier).replace("%types%", "kills, deaths, level, experience"));
+//		}
+//	}
 
 	private void executeStatsCommandSelf(Player p) {
 		sendStatsMessage(p, p.getName());
@@ -467,8 +460,13 @@ public class MainCommand implements CommandExecutor {
 	}
 
 	private void sendStatsMessage(CommandSender receiver, String username) {
+		Player p = Bukkit.getPlayer(username);
+		if (p == null) {
+			receiver.sendMessage(Toolkit.translate("&c警告 &f玩家不在线"));
+			return;
+		}
 		for (String line : messages.getStringList("Messages.Stats.Message")) {
-			receiver.sendMessage(arena.getUtilities().replaceBuiltInPlaceholdersIfPresent(line, username));
+			receiver.sendMessage(arena.getUtilities().replaceBuiltInPlaceholdersIfPresent(line, p));
 		}
 	}
 
@@ -492,10 +490,10 @@ public class MainCommand implements CommandExecutor {
 		sender.sendMessage(Toolkit.translate("%prefix% &cUnknown command: /" + alias + " " + unknownCommand));
 	}
 
-	private boolean isValidStatIdentifier(String identifierToValidate, boolean includeExperience) {
-		return (identifierToValidate.equalsIgnoreCase("kills") || identifierToValidate.equalsIgnoreCase("deaths")
-				|| identifierToValidate.equalsIgnoreCase("level"))
-				|| (includeExperience && identifierToValidate.equalsIgnoreCase("experience"));
-	}
+//	private boolean isValidStatIdentifier(String identifierToValidate, boolean includeExperience) {
+//		return (identifierToValidate.equalsIgnoreCase("kills") || identifierToValidate.equalsIgnoreCase("deaths")
+//				|| identifierToValidate.equalsIgnoreCase("level"))
+//				|| (includeExperience && identifierToValidate.equalsIgnoreCase("experience"));
+//	}
 
 }

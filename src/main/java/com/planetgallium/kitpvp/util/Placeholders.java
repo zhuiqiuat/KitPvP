@@ -1,7 +1,6 @@
 package com.planetgallium.kitpvp.util;
 
 import com.planetgallium.kitpvp.Game;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import com.planetgallium.kitpvp.game.Arena;
 
@@ -23,9 +22,11 @@ public class Placeholders extends PlaceholderExpansion {
 		placeholderAPItoBuiltIn.put("stats_kills", "%kills%");
 		placeholderAPItoBuiltIn.put("stats_deaths", "%deaths%");
 		placeholderAPItoBuiltIn.put("stats_kd", "%kd%");
+		placeholderAPItoBuiltIn.put("stats_leaderboard_kd", "%leaderboard_kd%");
 		placeholderAPItoBuiltIn.put("stats_experience", "%xp%");
 		placeholderAPItoBuiltIn.put("stats_level", "%level%");
-		placeholderAPItoBuiltIn.put("player_killstreak", "%streak%");
+		placeholderAPItoBuiltIn.put("player_killstreaks", "%streaks%");
+		placeholderAPItoBuiltIn.put("player_maxkillstreaks", "%maxstreaks%");
 		placeholderAPItoBuiltIn.put("player_kit", "%kit%");
 		placeholderAPItoBuiltIn.put("max_level", "%max_level%");
 		placeholderAPItoBuiltIn.put("max_xp", "%max_xp%");
@@ -34,40 +35,17 @@ public class Placeholders extends PlaceholderExpansion {
 
 	@Override
 	public String onPlaceholderRequest(Player p, @NotNull String identifier) {
-//		if (identifier.contains("top")) {
-//			return handleLeaderboardPlaceholder(identifier);
-//		}
 
 		if (p != null) {
-			return translatePlaceholderAPIPlaceholders(identifier, p.getName());
+			return translatePlaceholderAPIPlaceholders(identifier, p);
 		}
 		return null;
 	}
 
-//	private String handleLeaderboardPlaceholder(String identifier) {
-//		String[] queries = identifier.split("_");
-//		String topType = queries[1]; // ex: kills
-//		String topIdentifier = queries[2]; // ex: amount, player
-//		String possibleTopValue = queries[3]; // 1, 15
-//		int topValue = 1; // if number parsing fails, use top player
-//
-//		if (StringUtils.isNumeric(possibleTopValue)) {
-//			topValue = Integer.parseInt(possibleTopValue);
-//		} else {
-//			Toolkit.printToConsole("%prefix% &cFailed to properly parse placeholder, " +
-//					"expected number but received: " + possibleTopValue);
-//		}
-//
-//		TopEntry entry = arena.getLeaderboards().getTopN(topType, topValue);
-//		boolean isUsernamePlaceholder = topIdentifier.equals("player");
-//
-//		return isUsernamePlaceholder ? entry.getIdentifier() : String.valueOf(entry.getValue());
-//	}
-
-	public String translatePlaceholderAPIPlaceholders(String placeholderAPIIdentifier, String username) {
+	public String translatePlaceholderAPIPlaceholders(String placeholderAPIIdentifier, Player p) {
 		if (placeholderAPItoBuiltIn.containsKey(placeholderAPIIdentifier)) {
 			String toBuiltInPlaceholder = placeholderAPItoBuiltIn.get(placeholderAPIIdentifier);
-			return arena.getUtilities().replaceBuiltInPlaceholdersIfPresent(toBuiltInPlaceholder, username);
+			return arena.getUtilities().replaceBuiltInPlaceholdersIfPresent(toBuiltInPlaceholder, p);
 		} else {
 			Toolkit.printToConsole(String.format(
 					"&7[&b&lKIT-PVP&7] &cUnknown placeholder identifier [%s]. " + "Please see plugin page.",

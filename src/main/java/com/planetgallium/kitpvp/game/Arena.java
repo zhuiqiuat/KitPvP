@@ -16,7 +16,7 @@ import com.planetgallium.kitpvp.Game;
 
 public class Arena {
 
-	private final Game plugin;
+//	private final Game plugin;
 	private final Random random;
 
 	private final Resources resources;
@@ -33,7 +33,7 @@ public class Arena {
 	private final Menus menus;
 
 	public Arena(Game plugin, Resources resources) {
-		this.plugin = plugin;
+//		this.plugin = plugin;
 		this.random = new Random();
 
 		this.resources = resources;
@@ -90,8 +90,8 @@ public class Arena {
 		if (toSpawn) {
 			toSpawn(p, p.getWorld().getName());
 		}
-		if (!killstreaks.getKills().containsKey(p.getName())) {
-			killstreaks.getKills().put(p.getName(), 0);
+		if (!killstreaks.getKills().containsKey(p)) {
+			killstreaks.getKills().put(p, 0);
 		}
 
 		if (resources.getScoreboard().getBoolean("Scoreboard.General.Enabled")) {
@@ -117,7 +117,7 @@ public class Arena {
 		if (resources.getScoreboard().getBoolean("Scoreboard.General.Enabled"))
 			updateScoreboards(p, true);
 
-		stats.pushCachedStatsToDatabase(p.getName(), false); // cached stats are pushed to database on death
+		stats.pushCachedStatsToDatabase(p, false); // cached stats are pushed to database on death
 		hitCache.remove(p.getName());
 	}
 
@@ -128,11 +128,11 @@ public class Arena {
 		}
 
 		if (resources.getConfig().getBoolean("Arena.ResetKillStreakOnLeave"))
-			killstreaks.getKills().put(p.getName(), 0);
+			killstreaks.getKills().put(p, 0);
 
 		CacheManager.getPlayerAbilityCooldowns(p.getName()).clear();
 		hitCache.remove(p.getName());
-		stats.pushCachedStatsToDatabase(p.getName(), true);
+		stats.pushCachedStatsToDatabase(p, true);
 	}
 
 	public void giveArenaItems(Player p) {

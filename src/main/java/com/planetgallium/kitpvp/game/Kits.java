@@ -209,7 +209,7 @@ public class Kits {
 		}
 
 		if (!(Toolkit.getPermissionAmount(p, "kp.levelbypass.", 0) >= kit.getLevel()
-				|| arena.getStats().getStat("level", p.getName()) >= kit.getLevel())) {
+				|| arena.getStats().getStat("level", p) >= kit.getLevel())) {
 			p.sendMessage(
 					messages.fetchString("Messages.Other.Needed").replace("%level%", String.valueOf(kit.getLevel())));
 			return;
@@ -239,9 +239,9 @@ public class Kits {
 		p.sendMessage(messages.fetchString("Messages.Commands.Kit").replace("%kit%", kit.getName()));
 		Toolkit.playSoundToPlayer(p, "ENTITY_HORSE_ARMOR", 1);
 
-		if (CacheManager.getStatsCache().get(p.getName()).getLastPVPPlayer() != null) {
-			CacheManager.getStatsCache().get(p.getName()).setLastPVPPlayer(null);
-			CacheManager.getStatsCache().get(p.getName()).setLastPVPTime(0);
+		if (arena.getStats().getOrCreateStatsCache(p).getLastPVPPlayer() != null) {
+			arena.getStats().getOrCreateStatsCache(p).setLastPVPPlayer(null);
+			arena.getStats().getOrCreateStatsCache(p).setLastPVPTime(0);
 		}
 
 		Bukkit.getPluginManager().callEvent(new PlayerSelectKitEvent(player, kit));
@@ -271,7 +271,7 @@ public class Kits {
 
 		Cooldown kitCooldown = kit.getCooldown();
 		if (kitCooldown != null && kitCooldown.toSeconds() > 0 && !p.hasPermission("kp.cooldownbypass")) {
-			arena.getCooldowns().setKitCooldown(p.getName(), kit.getName());
+			arena.getCooldowns().setKitCooldown(p, kit.getName());
 		}
 
 		Resource kitResource = resources.getKit(kit.getName());

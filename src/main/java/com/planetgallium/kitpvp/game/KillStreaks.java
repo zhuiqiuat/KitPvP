@@ -3,6 +3,7 @@ package com.planetgallium.kitpvp.game;
 import java.util.HashMap;
 
 import com.cryptomorin.xseries.messages.Titles;
+import com.planetgallium.kitpvp.Game;
 import com.planetgallium.kitpvp.util.*;
 
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class KillStreaks implements Listener {
 //	private final Resources resources;
 	private final Resource killConfig;
 	@Getter
-	private final HashMap<String, Integer> kills;
+	private final HashMap<Player, Integer> kills;
 
 	public KillStreaks(Resources resources) {
 //		this.resources = resources;
@@ -27,7 +28,7 @@ public class KillStreaks implements Listener {
 
 	public void runStreakCase(String streakType, Player p) {
 		String username = p.getName();
-		int streakNumber = getStreak(username);
+		int streakNumber = getStreak(p);
 		World world = p.getWorld();
 
 		String pathPrefix = streakType + "." + streakNumber;
@@ -75,23 +76,32 @@ public class KillStreaks implements Listener {
 
 	}
 
-	public int getStreak(String username) {
-		if (!kills.containsKey(username)) {
-			kills.put(username, 0);
+	public int getStreak(Player p) {
+		if (!kills.containsKey(p)) {
+			kills.put(p, 0);
 		}
 
-		return kills.get(username);
+		return kills.get(p);
 	}
 
 	public void resetStreak(Player p) {
-		if (kills.containsKey(p.getName())) {
+		if (kills.containsKey(p)) {
 			runStreakCase("EndStreaks", p);
-			kills.put(p.getName(), 0);
+			kills.put(p, 0);
 		}
 	}
 
 	public void setStreak(Player p, int streak) {
-		kills.put(p.getName(), streak);
+		kills.put(p, streak);
+	}
+
+	public void addStreak(Player p) {
+		Arena arena = Game.getInstance().getArena();
+		kills.put(p, kills.get(p) + 1);
+		if (kills.get(p) > arena.getStats().getStat("maxstreaks", p)) {
+			arena.getStats().setStat("maxstreaks", p, kills.get(p));
+		}
+		runStreakCase("KillStreaks", p);
 	}
 
 }

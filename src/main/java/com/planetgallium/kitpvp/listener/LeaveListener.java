@@ -1,6 +1,5 @@
 package com.planetgallium.kitpvp.listener;
 
-import com.planetgallium.kitpvp.util.CacheManager;
 import com.planetgallium.kitpvp.util.PlayerData;
 import com.planetgallium.kitpvp.util.Resource;
 import com.planetgallium.kitpvp.util.Resources;
@@ -40,7 +39,7 @@ public class LeaveListener implements Listener {
 		Player p = e.getPlayer();
 		long time = System.currentTimeMillis();
 		if (Toolkit.inArena(p)) {
-			PlayerData pd = CacheManager.getStatsCache().get(p.getName());
+			PlayerData pd = arena.getStats().getOrCreateStatsCache(p);
 			if ((time - pd.getLastPVPTime()) < config.getInt("PVPMode.Time")) {
 				Player victim = p;
 				Player killer = pd.getLastPVPPlayer();
@@ -48,11 +47,16 @@ public class LeaveListener implements Listener {
 					arena.deletePlayer(p);
 					return;
 				}
+				PlayerData pd2 = arena.getStats().getOrCreateStatsCache(killer);
 				if (!killer.isOnline()) {
 					arena.deletePlayer(p);
 					return;
 				}
-				if (!CacheManager.getStatsCache().get(killer.getName()).getLastPVPPlayer().equals(victim)) {
+				if (pd2.getLastPVPPlayer() == null) {
+					arena.deletePlayer(p);
+					return;
+				}
+				if (!pd2.getLastPVPPlayer().equals(victim)) {
 					arena.deletePlayer(p);
 					return;
 				}
@@ -69,8 +73,8 @@ public class LeaveListener implements Listener {
 				broadcast(victim.getWorld(), config.fetchString("Death.Sound.Sound"),
 						config.getInt("Death.Sound.Pitch"));
 
-				arena.getStats().addToStat("deaths", victim.getName(), 1);
-				arena.getStats().removeExperience(victim.getName(),
+				arena.getStats().addToStat("deaths", victim, 1);
+				arena.getStats().removeExperience(victim,
 						resources.getLevels().getInt("Levels.Options.Experience-Taken-On-Death"));
 
 				if (config.getBoolean("Arena.DeathParticle")) {
@@ -137,18 +141,14 @@ public class LeaveListener implements Listener {
 	private void creditWithKill(Player victim, Player killer) {
 		if (victim != null && killer != null) {
 			if (!victim.getName().equals(killer.getName())) {
-				arena.getStats().addToStat("kills", killer.getName(), 1);
+				arena.getStats().addToStat("kills", killer, 1);
 				arena.getStats().addExperience(killer,
 						resources.getLevels().getInt("Levels.Options.Experience-Given-On-Kill"));
 
 				KillStreaks ks = arena.getKillStreaks();
-				if (!killer.getName().equals(victim.getName())) {
-					ks.getKills().put(killer.getName(), ks.getStreak(killer.getName()) + 1);
-					ks.runStreakCase("KillStreaks", killer);
-					ks.runStreakCase("EndStreaks", victim);
-					ks.getKills().put(victim.getName(), 0);
-
-				}
+				if (!killer.getName().equals(victim.getName()))
+					ks.addStreak(killer);
+				ks.resetStreak(victim);
 				List<String> killCommands = config.getStringList("Kill.Commands");
 				killCommands = Toolkit.replaceInList(killCommands, "%victim%", victim.getName());
 				Toolkit.runCommands(killer, killCommands, "%killer%", killer.getName());

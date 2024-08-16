@@ -29,36 +29,36 @@ public class Stats {
 		database.registerPlayerStats(p);
 	}
 
-	private boolean isPlayerRegistered(String username) {
-		if (CacheManager.getStatsCache().containsKey(username)) { // try to use cache first to be faster
+	public boolean isPlayerRegistered(Player p) {
+		if (CacheManager.getStatsCache().containsKey(p)) { // try to use cache first to be faster
 			return true;
 		}
-		return database.isPlayerRegistered(username);
+		return database.isPlayerRegistered(p);
 	}
 
-	public double getKDRatio(String username) {
-		if (getStat("deaths", username) != 0) {
-			double divided = (double) getStat("kills", username) / getStat("deaths", username);
+	public double getKDRatio(Player p) {
+		if (getStat("deaths", p) != 0) {
+			double divided = (double) getStat("kills", p) / getStat("deaths", p);
 			return Toolkit.round(divided, 2);
 		}
 		return 0.00;
 	}
 
-	public void removeExperience(String username, int amount) {
+	public void removeExperience(Player p, int amount) {
 		if (levels.getBoolean("Levels.Levels.Enabled")) {
-			int currentExperience = getStat("experience", username);
-			setStat("experience", username, currentExperience >= amount ? currentExperience - amount : 0);
+			int currentExperience = getStat("experience", p);
+			setStat("experience", p, currentExperience >= amount ? currentExperience - amount : 0);
 		}
 	}
 
 	public void addExperience(Player p, int experienceToAdd) {
 		if (levels.getBoolean("Levels.Levels.Enabled")) {
-			int currentExperience = getStat("experience", p.getName());
+			int currentExperience = getStat("experience", p);
 			int newExperience = applyPossibleXPMultiplier(p, currentExperience + experienceToAdd);
-			setStat("experience", p.getName(), newExperience);
-			if (getStat("experience", p.getName()) >= getRegularOrRelativeNeededExperience(p.getName())) {
+			setStat("experience", p, newExperience);
+			if (getStat("experience", p) >= getRegularOrRelativeNeededExperience(p)) {
 				levelUp(p);
-				Bukkit.getPluginManager().callEvent(new PlayerLevelUpEvent(p, getStat("level", p.getName())));
+				Bukkit.getPluginManager().callEvent(new PlayerLevelUpEvent(p, getStat("level", p)));
 			}
 		}
 	}
@@ -69,13 +69,11 @@ public class Stats {
 	}
 
 	public void levelUp(Player p) {
-		String username = p.getName();
+		if (getStat("level", p) < levels.getInt("Levels.Options.Maximum-Level")) {
 
-		if (getStat("level", username) < levels.getInt("Levels.Options.Maximum-Level")) {
-
-			int newLevel = getStat("level", username) + 1;
-			setStat("level", username, newLevel);
-			setStat("experience", username, 0);
+			int newLevel = getStat("level", p) + 1;
+			setStat("level", p, newLevel);
+			setStat("experience", p, 0);
 
 			List<String> levelUpCommands = levels.getStringList("Levels.Commands-On-Level-Up");
 			Toolkit.runCommands(p, levelUpCommands, "%level%", String.valueOf(newLevel));
@@ -90,60 +88,60 @@ public class Stats {
 			Toolkit.playSoundToPlayer(p, "ENTITY_PLAYER_LEVELUP", 1);
 
 		} else {
-			setStat("experience", username, 0);
+			setStat("experience", p, 0);
 		}
 	}
 
-	public void addToStat(String identifier, String username, int amount) {
-		int updatedAmount = getStat(identifier, username) + amount;
-		setStat(identifier, username, updatedAmount);
+	public void addToStat(String identifier, Player p, int amount) {
+		int updatedAmount = getStat(identifier, p) + amount;
+		setStat(identifier, p, updatedAmount);
 	}
 
-	public void setStat(String identifier, String username, int data) {
-		if (!isPlayerRegistered(username)) {
+	public void setStat(String identifier, Player p, int data) {
+		if (!isPlayerRegistered(p)) {
 			return;
 		}
 
-		getOrCreateStatsCache(username).setData(identifier, data);
+		getOrCreateStatsCache(p).setData(identifier, data);
 	}
 
-	public void pushCachedStatsToDatabase(String username, boolean removeFromCacheAfter) {
+	public void pushCachedStatsToDatabase(Player p, boolean removeFromCacheAfter) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (!CacheManager.getStatsCache().containsKey(username)) {
+				if (!CacheManager.getStatsCache().containsKey(p)) {
 					return; // nothing to push if stats cache is empty
 				}
 
-				database.setStatsData(username, getOrCreateStatsCache(username));
+				database.setStatsData(p, getOrCreateStatsCache(p));
 				if (removeFromCacheAfter) {
-					CacheManager.getStatsCache().remove(username);
+					CacheManager.getStatsCache().remove(p);
 				}
 			}
 		}.runTaskAsynchronously(plugin);
 	}
 
-	public int getStat(String identifier, String username) {
-		if (!isPlayerRegistered(username)) {
+	public int getStat(String identifier, Player p) {
+		if (!isPlayerRegistered(p)) {
 			return -1;
 		}
 
-		return getOrCreateStatsCache(username).getData(identifier);
+		return getOrCreateStatsCache(p).getData(identifier);
 	}
 
-	public PlayerData getOrCreateStatsCache(String username) {
-		if (!isPlayerRegistered(username)) {
-			return new PlayerData(-1, -1, -1, -1);
+	public PlayerData getOrCreateStatsCache(Player p) {
+		if (!isPlayerRegistered(p)) {
+			return new PlayerData(p, -1, -1, -1, -1, -1);
 		}
 
-		if (!CacheManager.getStatsCache().containsKey(username)) {
-			CacheManager.getStatsCache().put(username, database.getStatsData(username));
+		if (!CacheManager.getStatsCache().containsKey(p)) {
+			CacheManager.getStatsCache().put(p, database.getStatsData(p));
 		}
-		return CacheManager.getStatsCache().get(username);
+		return CacheManager.getStatsCache().get(p);
 	}
 
-	public int getRegularOrRelativeNeededExperience(String username) {
-		int level = getStat("level", username);
+	public int getRegularOrRelativeNeededExperience(Player p) {
+		int level = getStat("level", p);
 
 		if (levels.contains("Levels.Levels." + level + ".Experience-To-Level-Up")) {
 			return levels.getInt("Levels.Levels." + level + ".Experience-To-Level-Up");

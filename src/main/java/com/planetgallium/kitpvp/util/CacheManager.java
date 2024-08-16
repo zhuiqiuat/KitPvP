@@ -6,6 +6,8 @@ import lombok.Getter;
 
 import java.util.*;
 
+import org.bukkit.entity.Player;
+
 public class CacheManager {
 
 	private static final Map<String, String> usernameToUUID = new HashMap<>();
@@ -15,7 +17,7 @@ public class CacheManager {
 	private static final Map<String, Menu> previewMenuCache = new HashMap<>();
 	private static final Map<String, Map<String, Long>> abilityCooldowns = new HashMap<>();
 	@Getter
-	private static final Map<String, PlayerData> statsCache = new HashMap<>();
+	private static final Map<Player, PlayerData> statsCache = new HashMap<>();
 	@Getter
 	private static final Set<String> potionSwitcherUsers = new HashSet<>();
 

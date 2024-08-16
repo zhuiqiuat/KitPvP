@@ -53,8 +53,8 @@ public class DeathListener implements Listener {
 			respawnPlayer(victim);
 			setDeathMessage(victim);
 
-			arena.getStats().addToStat("deaths", victim.getName(), 1);
-			arena.getStats().removeExperience(victim.getName(),
+			arena.getStats().addToStat("deaths", victim, 1);
+			arena.getStats().removeExperience(victim,
 					resources.getLevels().getInt("Levels.Options.Experience-Taken-On-Death"));
 
 			if (config.getBoolean("Arena.DeathParticle")) {
@@ -230,23 +230,16 @@ public class DeathListener implements Listener {
 	private void creditWithKill(Player victim, Player killer) {
 		if (victim != null && killer != null) {
 			if (!victim.getName().equals(killer.getName())) {
-				arena.getStats().addToStat("kills", killer.getName(), 1);
+				arena.getStats().addToStat("kills", killer, 1);
 				arena.getStats().addExperience(killer,
 						resources.getLevels().getInt("Levels.Options.Experience-Given-On-Kill"));
 
 				KillStreaks ks = arena.getKillStreaks();
-				CacheManager.getStatsCache().get(killer.getName()).setLastPVPPlayer(null);
-				CacheManager.getStatsCache().get(killer.getName()).setLastPVPTime(0);
-				if (killer != null && !killer.getName().equals(victim.getName())) {
-					ks.getKills().put(killer.getName(), ks.getStreak(killer.getName()) + 1);
-					ks.runStreakCase("KillStreaks", killer);
-					ks.runStreakCase("EndStreaks", victim);
-					ks.getKills().put(victim.getName(), 0);
-
-				} else {
-					ks.getKills().put(victim.getName(), 0);
-					ks.runStreakCase("EndStreaks", victim);
-				}
+				arena.getStats().getOrCreateStatsCache(killer).setLastPVPPlayer(null);
+				arena.getStats().getOrCreateStatsCache(killer).setLastPVPTime(0);
+				if (killer != null && !killer.getName().equals(victim.getName()))
+					ks.addStreak(killer);
+				ks.resetStreak(victim);
 
 				List<String> killCommands = config.getStringList("Kill.Commands");
 				killCommands = Toolkit.replaceInList(killCommands, "%victim%", victim.getName());

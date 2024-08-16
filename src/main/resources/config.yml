@@ -19,9 +19,6 @@ Items:
       Server: 主大厅
       Enabled: false
     Commands: []
-Chat:
-  Format: '%level% &r%player% &r%message%'
-  Enabled: true
 Combat:
   HitSound:
     Sound: BLAZE_HIT
