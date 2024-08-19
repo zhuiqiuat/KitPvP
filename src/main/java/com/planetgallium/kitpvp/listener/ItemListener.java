@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -44,7 +45,7 @@ public class ItemListener implements Listener {
 	private final Resources resources;
 	private final Resource config;
 	private final Resource abilities;
-	
+
 	public ItemListener(Game plugin) {
 		this.plugin = plugin;
 		this.arena = plugin.getArena();
@@ -58,8 +59,8 @@ public class ItemListener implements Listener {
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 
-		if (Toolkit.inArena(p) &&
-				(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (Toolkit.inArena(p)
+				&& (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 
 			ItemStack interactedItem = Toolkit.getHandItemForInteraction(e);
 			ItemMeta interactedItemMeta = interactedItem.getItemMeta();
@@ -87,9 +88,8 @@ public class ItemListener implements Listener {
 			} else if (isSplashPotion(interactedItem)) {
 				witchAbility(e, p, interactedItem, interactedItemMeta);
 
-			} else if ((Toolkit.hasMatchingMaterial(interactedItem, "SLIME_BALL") ||
-					Toolkit.hasMatchingMaterial(interactedItem, "MAGMA_CREAM"))
-						&& interactedItem.hasItemMeta()) {
+			} else if ((Toolkit.hasMatchingMaterial(interactedItem, "SLIME_BALL")
+					|| Toolkit.hasMatchingMaterial(interactedItem, "MAGMA_CREAM")) && interactedItem.hasItemMeta()) {
 				archerAbility(e, p, interactedItem, interactedItemMeta);
 
 			} else if (Toolkit.hasMatchingMaterial(interactedItem, "TNT")) {
@@ -99,12 +99,11 @@ public class ItemListener implements Listener {
 
 			/* Kit Item and custom Arena Items */
 
-			if (config.contains("Items.Kits") &&
-					Toolkit.hasMatchingMaterial(interactedItem, config.fetchString("Items.Kits.Material"))) {
+			if (config.contains("Items.Kits")
+					&& Toolkit.hasMatchingMaterial(interactedItem, config.fetchString("Items.Kits.Material"))) {
 
 				if (Toolkit.hasMatchingDisplayName(interactedItem, config.fetchString("Items.Kits.Name"))) {
-					Toolkit.runCommands(p, config.getStringList("Items.Kits.Commands"),
-							"none", "none");
+					Toolkit.runCommands(p, config.getStringList("Items.Kits.Commands"), "none", "none");
 
 					if (config.getBoolean("Items.Kits.Menu")) {
 						arena.getMenus().getKitMenu().open(p);
@@ -126,20 +125,19 @@ public class ItemListener implements Listener {
 					String itemMaterialName = config.fetchString(itemPath + ".Material");
 					if (Toolkit.hasMatchingMaterial(interactedItem, itemMaterialName)) {
 						if (Toolkit.hasMatchingDisplayName(interactedItem, config.fetchString(itemPath + ".Name"))) {
-							Toolkit.runCommands(p, config.getStringList(itemPath + ".Commands"),
-									"none", "none");
+							Toolkit.runCommands(p, config.getStringList(itemPath + ".Commands"), "none", "none");
 							e.setCancelled(true);
 						}
 					}
 				}
 			}
-			
+
 		}
 	}
 
 	public boolean isAbility(Player p, ItemStack interactedItem, String kitName, String abilityMaterialName) {
-		return interactedItem.getType() == Toolkit.safeMaterial(abilityMaterialName) &&
-				isBuiltInAbilityItem(p, kitName, interactedItem);
+		return interactedItem.getType() == Toolkit.safeMaterial(abilityMaterialName)
+				&& isBuiltInAbilityItem(p, kitName, interactedItem);
 	}
 
 	@EventHandler
@@ -178,21 +176,21 @@ public class ItemListener implements Listener {
 
 				return utilities.isCombatActionPermittedInRegion(p);
 			} else {
-				p.sendMessage(resources.getMessages().fetchString("Messages.General.Permission")
-						.replace("%permission%", abilityPermission));
+				p.sendMessage(resources.getMessages().fetchString("Messages.General.Permission").replace("%permission%",
+						abilityPermission));
 			}
 		}
 
 		return false;
 	}
 
-	private void useBuiltInAbilityItem(Event e, Player p, Player clicked, ItemStack abilityItem,
-									   String kitName) {
+	private void useBuiltInAbilityItem(Event e, Player p, Player clicked, ItemStack abilityItem, String kitName) {
 		String abilityPrefix = "Abilities." + kitName;
 
 		if (abilities.getBoolean(abilityPrefix + ".Message.Enabled")) {
 			String abilityMessage = abilities.fetchString(abilityPrefix + ".Message.Message");
-			if (clicked != null) abilityMessage = abilityMessage.replace("%player%", clicked.getName());
+			if (clicked != null)
+				abilityMessage = abilityMessage.replace("%player%", clicked.getName());
 			p.sendMessage(abilityMessage);
 		}
 
@@ -221,8 +219,8 @@ public class ItemListener implements Listener {
 	}
 
 	private void specialTNT(PlayerInteractEvent e, Player p, ItemStack abilityItem) {
-		if (config.getBoolean("TNT.Enabled") &&
-				Toolkit.hasMatchingDisplayName(abilityItem, config.fetchString("TNT.Name"))) {
+		if (config.getBoolean("TNT.Enabled")
+				&& Toolkit.hasMatchingDisplayName(abilityItem, config.fetchString("TNT.Name"))) {
 
 			if (!utilities.isCombatActionPermittedInRegion(p)) {
 				return;
@@ -259,7 +257,7 @@ public class ItemListener implements Listener {
 					}
 				}.runTaskLater(plugin, 5L);
 
-				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 5));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 60, 5));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 5));
 
 				useBuiltInAbilityItem(e, p, p, abilityItem, "Warper");
@@ -283,7 +281,7 @@ public class ItemListener implements Listener {
 			if (entity instanceof Player) {
 				Player nearby = (Player) entity;
 				nearby.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 0));
-				nearby.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 0));
+				nearby.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 100, 0));
 			}
 		}
 
@@ -335,8 +333,8 @@ public class ItemListener implements Listener {
 		String firePath = shouldToggleOn ? "Fire" : "NoFire";
 		String fireItem = shouldToggleOn ? "MAGMA_CREAM" : "SLIME_BALL";
 
-		if (Toolkit.hasMatchingDisplayName(abilityItem, abilities.fetchString("Abilities.Archer.Item.Fire")) ||
-				Toolkit.hasMatchingDisplayName(abilityItem, abilities.fetchString("Abilities.Archer.Item.NoFire"))) {
+		if (Toolkit.hasMatchingDisplayName(abilityItem, abilities.fetchString("Abilities.Archer.Item.Fire"))
+				|| Toolkit.hasMatchingDisplayName(abilityItem, abilities.fetchString("Abilities.Archer.Item.NoFire"))) {
 			abilityItem.setType(XMaterial.matchXMaterial(fireItem).get().parseMaterial());
 			abilityItemMeta.setDisplayName(abilities.fetchString("Abilities.Archer.Item." + firePath));
 			abilityItem.setItemMeta(abilityItemMeta);
@@ -352,8 +350,7 @@ public class ItemListener implements Listener {
 	}
 
 	private void witchAbility(PlayerInteractEvent e, Player p, ItemStack potionItem, ItemMeta abilityItemMeta) {
-		if (potionItem.hasItemMeta() && abilityItemMeta.hasLore() &&
-				Toolkit.singleLineLoreMatches(potionItem, "X")) {
+		if (potionItem.hasItemMeta() && abilityItemMeta.hasLore() && Toolkit.singleLineLoreMatches(potionItem, "X")) {
 
 			Toolkit.SlotWrapper slotUsed = Toolkit.getSlotUsedForInteraction(e);
 			ItemStack randomizedWitchPotion = createWitchPotion();
@@ -380,7 +377,7 @@ public class ItemListener implements Listener {
 	}
 
 	private void thunderboltAbility(PlayerInteractEntityEvent e, Player damager, Player damagedPlayer,
-									ItemStack abilityItem) {
+			ItemStack abilityItem) {
 		damager.getWorld().strikeLightningEffect(e.getRightClicked().getLocation());
 		damagedPlayer.damage(4.0);
 		damagedPlayer.setFireTicks(5 * 20);
@@ -389,7 +386,7 @@ public class ItemListener implements Listener {
 	}
 
 	private void vampireAbliity(PlayerInteractEntityEvent e, Player damager, Player damagedPlayer,
-								ItemStack abilityItem) {
+			ItemStack abilityItem) {
 		damagedPlayer.damage(4.0);
 		Toolkit.playSoundToPlayer(damagedPlayer, "ENTITY_GENERIC_DRINK", -1);
 
@@ -448,8 +445,7 @@ public class ItemListener implements Listener {
 					}
 
 					if (abilities.getBoolean("Abilities.Trickster.Sound.Enabled")) {
-						Toolkit.playSoundToPlayer(shooter,
-								abilities.fetchString("Abilities.Trickster.Sound.Sound"),
+						Toolkit.playSoundToPlayer(shooter, abilities.fetchString("Abilities.Trickster.Sound.Sound"),
 								abilities.getInt("Abilities.Trickster.Sound.Pitch"));
 						Toolkit.playSoundToPlayer(damagedPlayer,
 								abilities.fetchString("Abilities.Trickster.Sound.Sound"),
@@ -469,8 +465,7 @@ public class ItemListener implements Listener {
 				return;
 			}
 
-			int ammoSlot = getItemByMeta(Material.MAGMA_CREAM,
-					abilities.fetchString("Abilities.Archer.Item.Fire"), p);
+			int ammoSlot = getItemByMeta(Material.MAGMA_CREAM, abilities.fetchString("Abilities.Archer.Item.Fire"), p);
 
 			if (ammoSlot != -1) {
 				ItemStack ammo = p.getInventory().getItem(ammoSlot);
@@ -502,31 +497,32 @@ public class ItemListener implements Listener {
 	}
 
 	private ItemStack createWitchPotion() {
-		Potion potion = new Potion(pickPotion(), 1);
-		potion.setSplash(true);
+		ItemStack potionStack = new ItemStack(Material.SPLASH_POTION, 1);
+		PotionMeta potionMeta = (PotionMeta) potionStack.getItemMeta();
+		potionMeta.setBasePotionType(pickPotion());
+		potionStack.setItemMeta(potionMeta);
 
-		ItemStack potionStack = potion.toItemStack(1);
 		Toolkit.appendToLore(potionStack, "X");
 
 		return potionStack;
 	}
-	
+
 	private PotionType pickPotion() {
 		PotionType potion = null;
-		
+
 		Random ran = new Random();
 		int chance = ran.nextInt(100);
-		
+
 		if (chance < 10) {
-			potion = PotionType.INSTANT_DAMAGE;
+			potion = PotionType.HARMING;
 		} else if (chance < 20) {
-			potion = PotionType.INSTANT_HEAL;
+			potion = PotionType.HEALING;
 		} else if (chance < 40) {
 			potion = PotionType.POISON;
 		} else if (chance < 60) {
-			potion = PotionType.REGEN;
+			potion = PotionType.REGENERATION;
 		} else if (chance < 80) {
-			potion = PotionType.SPEED;
+			potion = PotionType.SWIFTNESS;
 		} else if (chance < 100) {
 			potion = PotionType.SLOWNESS;
 		}

@@ -42,11 +42,10 @@ public class DeathListener implements Listener {
 		if (Toolkit.inArena(e.getEntity())) {
 
 			Player victim = e.getEntity();
-			e.setDeathMessage("");
+			e.deathMessage(null);
 
-			if (config.getBoolean("Arena.PreventDeathDrops")) {
+			if (config.getBoolean("Arena.PreventDeathDrops"))
 				e.getDrops().clear();
-			}
 
 			CacheManager.getPotionSwitcherUsers().remove(victim.getName());
 
@@ -57,9 +56,8 @@ public class DeathListener implements Listener {
 			arena.getStats().removeExperience(victim,
 					resources.getLevels().getInt("Levels.Options.Experience-Taken-On-Death"));
 
-			if (config.getBoolean("Arena.DeathParticle")) {
+			if (config.getBoolean("Arena.DeathParticle"))
 				victim.getWorld().playEffect(victim.getLocation().add(0.0D, 1.0D, 0.0D), Effect.STEP_SOUND, 152);
-			}
 
 			Toolkit.runCommands(victim, config.getStringList("Death.Commands"), "%victim%", victim.getName());
 
@@ -185,7 +183,7 @@ public class DeathListener implements Listener {
 			creditWithKill(victim, killer);
 
 		} else if ((cause == DamageCause.BLOCK_EXPLOSION || cause == DamageCause.ENTITY_EXPLOSION)
-				&& getExplodedEntity(victim.getLastDamageCause()).getType() == EntityType.PRIMED_TNT) {
+				&& getExplodedEntity(victim.getLastDamageCause()).getType() == EntityType.TNT) {
 			String bomberName = getExplodedEntity(victim.getLastDamageCause()).getCustomName();
 			Player killer = Toolkit.getPlayer(victim.getWorld(), bomberName);
 

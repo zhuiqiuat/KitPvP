@@ -85,7 +85,7 @@ public class ArenaListener implements Listener {
 	@EventHandler
 	public void onExplode(EntityExplodeEvent e) {
 		if (Toolkit.inArena(e.getEntity()) && config.getBoolean("Arena.PreventBlockBreaking")) {
-			if (e.getEntityType() == EntityType.PRIMED_TNT) { // enable TNT explosion animation
+			if (e.getEntityType() == EntityType.TNT) { // enable TNT explosion animation
 				e.blockList().clear();
 				e.setCancelled(false);
 				return;
@@ -122,7 +122,7 @@ public class ArenaListener implements Listener {
 
 			} else if (e.getEntity() instanceof Damageable) {
 
-				if (e.getDamager().getType() == EntityType.PRIMED_TNT) {
+				if (e.getDamager().getType() == EntityType.TNT) {
 					if (e.getEntity() instanceof ArmorStand || !(e.getEntity() instanceof LivingEntity)) {
 						// for preventing breakage of paintings, item frames, etc.
 						e.setCancelled(true);
