@@ -3,6 +3,8 @@ package com.planetgallium.kitpvp.listener;
 import com.planetgallium.kitpvp.Game;
 import com.planetgallium.kitpvp.util.Resource;
 
+import java.util.List;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,6 +23,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -237,6 +240,22 @@ public class ArenaListener implements Listener {
 		if (e.getPlayer().hasPermission("Arena.PreventSignChange"))
 			return;
 		e.setCancelled(true);
+	}
+
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	void onPickArrow(PlayerPickupArrowEvent e) {
+		Player p = e.getPlayer();
+		if (Toolkit.inArena(p)) {
+			if (!arena.getKits().playerHasKit(p.getName())) {
+				e.setCancelled(true);
+				return;
+			}
+			List<String> kits = config.getStringList("Arena.ArrowKits");
+			if (kits.contains(arena.getKits().getKitOfPlayer(p.getName()).getName()))
+				return;
+			e.setCancelled(true);
+		}
 	}
 
 }
