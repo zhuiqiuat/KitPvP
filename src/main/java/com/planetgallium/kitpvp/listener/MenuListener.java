@@ -15,77 +15,80 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class MenuListener implements Listener {
 
-    private final Game plugin;
-    private final Arena arena;
-    private final Resource config;
-    private final Resource menuConfig;
+	private final Game plugin;
+	private final Arena arena;
+	private final Resource config;
+	private final Resource menuConfig;
 
-    public MenuListener(Game plugin) {
-        this.plugin = plugin;
-        this.arena = plugin.getArena();
-        this.config = plugin.getResources().getConfig();
-        this.menuConfig = plugin.getResources().getMenu();
-    }
+	public MenuListener(Game plugin) {
+		this.plugin = plugin;
+		this.arena = plugin.getArena();
+		this.config = plugin.getResources().getConfig();
+		this.menuConfig = plugin.getResources().getMenu();
+	}
 
-    @EventHandler
-    public void onClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() != null) {
-            Player p = (Player) e.getWhoClicked();
+	@EventHandler
+	public void onClick(InventoryClickEvent e) {
+		if (e.getClickedInventory() != null) {
+			Player p = (Player) e.getWhoClicked();
 
-            Inventory originInventory = e.getClickedInventory();
-            Inventory clickedInventory = e.getInventory();
+			Inventory originInventory = e.getClickedInventory();
+			Inventory clickedInventory = e.getInventory();
 
-            // to prevent adding items into the inventory
-            if (originInventory.getType() == InventoryType.PLAYER && clickedInventory.getType() == InventoryType.CHEST) {
-                if (clickedInventory.getHolder() instanceof KitHolder ||
-                        clickedInventory.getHolder() instanceof PreviewHolder) {
-                    e.setCancelled(true);
-                    return;
-                }
-            }
+			// to prevent adding items into the inventory
+			if (originInventory.getType() == InventoryType.PLAYER
+					&& clickedInventory.getType() == InventoryType.CHEST) {
+				if (clickedInventory.getHolder() instanceof KitHolder
+						|| clickedInventory.getHolder() instanceof PreviewHolder) {
+					e.setCancelled(true);
+					return;
+				}
+			}
 
-            if (e.getClickedInventory().getHolder() instanceof KitHolder) {
+			if (e.getClickedInventory().getHolder() instanceof KitHolder) {
 
-                Inventory openMenu = e.getClickedInventory();
-                String itemPath = "Menu.Items." + e.getSlot();
+				Inventory openMenu = e.getClickedInventory();
+				String itemPath = "Menu.Items." + e.getSlot();
 
-                if (menuConfig.contains(itemPath)) {
-                    if (openMenu.getItem(e.getSlot()) != null) {
-                        e.setCancelled(true);
-                        p.closeInventory();
+				e.setCancelled(true);
 
-                        String clickType = e.getClick() == ClickType.LEFT ? "Left-Click" : "Right-Click";
+				if (menuConfig.contains(itemPath)) {
+					if (openMenu.getItem(e.getSlot()) != null) {
+						p.closeInventory();
 
-                        if (menuConfig.contains(itemPath + ".Commands")) {
-                            new BukkitRunnable() {
-                                @Override
-                                public void run() {
-                                    Toolkit.runCommands(p,
-                                            menuConfig.getStringList(itemPath + ".Commands." + clickType),
-                                            "none", "none");
-                                }
-                            }.runTaskLater(plugin, 1L);
-                        }
-                    }
-                }
+						String clickType = e.getClick() == ClickType.LEFT ? "Left-Click" : "Right-Click";
 
-            } else if (e.getClickedInventory().getHolder() instanceof PreviewHolder) {
+						if (menuConfig.contains(itemPath + ".Commands")) {
+							new BukkitRunnable() {
+								@Override
+								public void run() {
+									Toolkit.runCommands(p,
+											menuConfig.getStringList(itemPath + ".Commands." + clickType), "none",
+											"none");
+								}
+							}.runTaskLater(plugin, 1L);
+						}
+					}
+				}
 
-                if (e.getSlot() == 8) {
-                    p.closeInventory();
+			} else if (e.getClickedInventory().getHolder() instanceof PreviewHolder) {
 
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            Toolkit.runCommands(p, config.getStringList("PreviewMenuBackArrowCommands"), "none", "none");
-                        }
-                    }.runTaskLater(plugin, 1L);
+				if (e.getSlot() == 8) {
+					p.closeInventory();
 
-                } else {
-                    e.setCancelled(true);
-                }
-            }
-        }
-    }
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							Toolkit.runCommands(p, config.getStringList("PreviewMenuBackArrowCommands"), "none",
+									"none");
+						}
+					}.runTaskLater(plugin, 1L);
+
+				} else {
+					e.setCancelled(true);
+				}
+			}
+		}
+	}
 
 }

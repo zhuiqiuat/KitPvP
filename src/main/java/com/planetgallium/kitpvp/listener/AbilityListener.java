@@ -16,12 +16,12 @@ public class AbilityListener implements Listener {
 
 	private final Arena arena;
 	private final Resources resources;
-	
+
 	public AbilityListener(Game plugin) {
 		this.arena = plugin.getArena();
 		this.resources = plugin.getResources();
 	}
-	
+
 	@EventHandler
 	public void onAbility(PlayerAbilityEvent e) {
 		Player p = e.getPlayer();
@@ -31,18 +31,17 @@ public class AbilityListener implements Listener {
 		}
 
 		Ability ability = e.getAbility();
-
 		String abilityPermission = "kp.ability." + ability.getName().toLowerCase();
 		if (!p.hasPermission(abilityPermission)) {
-			p.sendMessage(resources.getMessages().fetchString("Messages.General.Permission")
-					.replace("%permission%", abilityPermission));
+			p.sendMessage(resources.getMessages().fetchString("Messages.General.Permission").replace("%permission%",
+					abilityPermission));
 			return;
 		}
 
 		Cooldown cooldownRemaining = arena.getCooldowns().getRemainingCooldown(p, ability);
 		if (cooldownRemaining.toSeconds() > 0) {
-			p.sendMessage(resources.getMessages().fetchString("Messages.Error.CooldownAbility")
-					.replace("%cooldown%", cooldownRemaining.formatted(false)));
+			p.sendMessage(resources.getMessages().fetchString("Messages.Error.CooldownAbility").replace("%cooldown%",
+					cooldownRemaining.formatted(false)));
 			return;
 		}
 
